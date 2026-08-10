@@ -1,0 +1,116 @@
+import type { FC } from "react"
+import { useEffect } from "react"
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
+import { useAppDispatch } from "./app/hooks"
+import { Navbar } from "./components/Navbar"
+import { fetchMeAsync } from "./features/auth/authSlice"
+import { ProtectedRoute } from "./features/auth/components/ProtectedRoute"
+import { PublicOnlyRoute } from "./features/auth/components/PublicOnlyRoute"
+import { ForgotPasswordPage } from "./features/auth/pages/ForgotPasswordPage"
+import { LoginPage } from "./features/auth/pages/LoginPage"
+import { ProfilePage } from "./features/auth/pages/ProfilePage"
+import { RegisterPage } from "./features/auth/pages/RegisterPage"
+import { ResetPasswordPage } from "./features/auth/pages/ResetPasswordPage"
+import { VerifyEmailPage } from "./features/auth/pages/VerifyEmailPage"
+import { LandingPage } from "./pages/LandingPage"
+import { PrivacyPage } from "./pages/PrivacyPage"
+import { getAccessToken, getRefreshToken } from "./utils/api"
+
+/** Shared Navbar + Footer shell wrapper */
+const Shell: FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="min-vh-100 d-flex flex-column bg-light">
+    <Navbar />
+    <main className="flex-grow-1">{children}</main>
+    <footer className="py-3 bg-white text-center text-muted border-top">
+      <small>© {new Date().getFullYear()} Fuenex SNG. All rights reserved.</small>
+    </footer>
+  </div>
+)
+
+export const App: FC = () => {
+  const dispatch = useAppDispatch()
+
+  useEffect(() => {
+    const hasToken = getAccessToken() ?? getRefreshToken()
+    if (hasToken) {
+      void dispatch(fetchMeAsync())
+    }
+  }, [dispatch])
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* Standalone pages — own layout, no shared Navbar */}
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+
+        {/* Auth routes — use shared shell */}
+        <Route
+          path="/login"
+          element={
+            <PublicOnlyRoute>
+              <Shell>
+                <LoginPage />
+              </Shell>
+            </PublicOnlyRoute>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <PublicOnlyRoute>
+              <Shell>
+                <RegisterPage />
+              </Shell>
+            </PublicOnlyRoute>
+          }
+        />
+        <Route
+          path="/forgot-password"
+          element={
+            <PublicOnlyRoute>
+              <Shell>
+                <ForgotPasswordPage />
+              </Shell>
+            </PublicOnlyRoute>
+          }
+        />
+
+        {/* Public utility routes */}
+        <Route
+          path="/reset-password"
+          element={
+            <Shell>
+              <ResetPasswordPage />
+            </Shell>
+          }
+        />
+        <Route
+          path="/verify-email"
+          element={
+            <Shell>
+              <VerifyEmailPage />
+            </Shell>
+          }
+        />
+
+        {/* Protected routes */}
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Shell>
+                <ProfilePage />
+              </Shell>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
+  )
+}
+
+export default App
