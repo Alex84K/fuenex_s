@@ -1,6 +1,37 @@
 export type User = {
   id: string
   email: string
+  emailVerified: boolean
+  firstName: string
+  lastName: string
+  phone: string
+  inn: string
+  address: Address | null
+  avatar: AvatarMeta | null
+  createdAt: string
+  updatedAt: string
+}
+
+export type Address = {
+  country: string
+  postalCode: string
+  region: string
+  city: string
+  street: string
+  building: string
+  unit: string
+}
+
+export type AvatarMeta = {
+  updatedAt: string
+  etag: string
+}
+
+export type ProfilePatch = {
+  firstName?: string
+  lastName?: string
+  phone?: string
+  inn?: string
 }
 
 export type AuthResponse = {
@@ -151,4 +182,83 @@ export async function apiFetch<T = unknown>(
   }
 
   return data as T
+}
+
+/**
+ * Fetches a binary resource (avatar). Returns the full Response so the
+ * caller can read .blob(), inspect headers (ETag, Content-Type), and
+ * check .status directly.
+ */
+export async function apiFetchBinary(
+  endpoint: string,
+  options: RequestInit = {},
+  isRetry = false,
+): Promise<Response> {
+  const headers = new Headers(options.headers ?? {})
+
+  const token = getAccessToken()
+  if (token && !headers.has("Authorization")) {
+    headers.set("Authorization", `Bearer ${token}`)
+  }
+
+  const response = await fetch(endpoint, { ...options, headers })
+
+  if (response.status === 304) {
+    return response
+  }
+
+  if (response.status === 401 && !isRetry) {
+    const refreshToken = getRefreshToken()
+    if (refreshToken) {
+      if (!isRefreshing) {
+        isRefreshing = true
+        try {
+          const refreshRes = await fetch("/api/v1/auth/refresh", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ refreshToken }),
+          })
+
+          if (refreshRes.ok) {
+            const data = (await refreshRes.json()) as AuthResponse
+            setTokens(data.accessToken, data.refreshToken)
+            isRefreshing = false
+            onRefreshed(data.accessToken)
+          } else {
+            isRefreshing = false
+            clearTokens()
+            refreshSubscribers = []
+          }
+        } catch {
+          isRefreshing = false
+          clearTokens()
+          refreshSubscribers = []
+        }
+      }
+
+      return new Promise((resolve, reject) => {
+        subscribeTokenRefresh((newToken: string) => {
+          const newHeaders = new Headers(options.headers ?? {})
+          newHeaders.set("Authorization", `Bearer ${newToken}`)
+          apiFetchBinary(endpoint, { ...options, headers: newHeaders }, true)
+            .then(resolve)
+            .catch(reject)
+        })
+      })
+    }
+  }
+
+  if (!response.ok) {
+    let errorCode = "UNKNOWN_ERROR"
+    let errorMessage = `HTTP ${String(response.status)} ${response.statusText}`
+    const ct = response.headers.get("content-type")
+    if (ct?.includes("application/json")) {
+      const data = (await response.json()) as { error?: { code?: string; message?: string } }
+      errorCode = data.error?.code ?? errorCode
+      errorMessage = data.error?.message ?? errorMessage
+    }
+    throw new ApiError(response.status, errorCode, errorMessage)
+  }
+
+  return response
 }

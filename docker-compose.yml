@@ -1,0 +1,8 @@
+services:
+  fuenex_admin:
+    build: .
+    image: fuenex_sng_web:latest
+    container_name: fuenex_sng_web
+    ports:
+      - "5504:80"
+    command: nginx -g 'daemon off;'

@@ -1,9 +1,10 @@
 import type { PayloadAction } from "@reduxjs/toolkit"
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
-import type { AuthResponse, User } from "../../utils/api"
+import type { Address, AuthResponse, ProfilePatch, User } from "../../utils/api"
 import {
   ApiError,
   apiFetch,
+  apiFetchBinary,
   clearTokens,
   getAccessToken,
   getRefreshToken,
@@ -237,6 +238,140 @@ export const deleteAccountAsync = createAsyncThunk<
   }
 })
 
+// --- Profile thunks ---
+
+/** PATCH /me — обновление скалярных полей профиля (ADR-006 §4). */
+export const patchProfileAsync = createAsyncThunk<
+  User,
+  ProfilePatch,
+  { rejectValue: string }
+>("auth/patchProfile", async (patch, { rejectWithValue }) => {
+  try {
+    return await apiFetch<User>("/api/v1/me", {
+      method: "PATCH",
+      body: JSON.stringify(patch),
+    })
+  } catch (err: unknown) {
+    if (err instanceof ApiError) {
+      return rejectWithValue(err.message)
+    }
+    return rejectWithValue("Failed to update profile.")
+  }
+})
+
+/** PUT /me/address — полная замена адреса (ADR-006 §4). */
+export const putAddressAsync = createAsyncThunk<
+  User,
+  Address,
+  { rejectValue: string }
+>("auth/putAddress", async (address, { rejectWithValue }) => {
+  try {
+    return await apiFetch<User>("/api/v1/me/address", {
+      method: "PUT",
+      body: JSON.stringify(address),
+    })
+  } catch (err: unknown) {
+    if (err instanceof ApiError) {
+      return rejectWithValue(err.message)
+    }
+    return rejectWithValue("Failed to save address.")
+  }
+})
+
+/**
+ * DELETE /me/address — удаление адреса. Сервер отвечает 204 без тела
+ * (ADR-006 §4), поэтому после успеха локально обнуляем адрес в стейте.
+ */
+export const deleteAddressAsync = createAsyncThunk<
+  undefined,
+  undefined,
+  { rejectValue: string }
+>("auth/deleteAddress", async (_, { rejectWithValue }) => {
+  try {
+    await apiFetch("/api/v1/me/address", { method: "DELETE" })
+    return undefined
+  } catch (err: unknown) {
+    if (err instanceof ApiError) {
+      return rejectWithValue(err.message)
+    }
+    return rejectWithValue("Failed to delete address.")
+  }
+})
+
+/**
+ * PUT /me/avatar — загрузка аватара (бинарное тело, ≤512 КБ). Сервер
+ * отвечает 204 без тела, поэтому после успеха перечитываем профиль,
+ * чтобы получить свежие avatar.etag/updatedAt (ADR-006 §4).
+ */
+export const uploadAvatarAsync = createAsyncThunk<
+  User,
+  { bytes: ArrayBuffer; mimeType: string },
+  { rejectValue: string }
+>("auth/uploadAvatar", async ({ bytes, mimeType }, { rejectWithValue }) => {
+  try {
+    await apiFetch("/api/v1/me/avatar", {
+      method: "PUT",
+      headers: { "Content-Type": mimeType },
+      body: bytes,
+    })
+    return await apiFetch<User>("/api/v1/me", { method: "GET" })
+  } catch (err: unknown) {
+    if (err instanceof ApiError) {
+      return rejectWithValue(err.message)
+    }
+    return rejectWithValue("Failed to upload avatar.")
+  }
+})
+
+/**
+ * DELETE /me/avatar — удаление аватара. Сервер отвечает 204 без тела,
+ * поэтому после успеха локально обнуляем аватар в стейте.
+ */
+export const deleteAvatarAsync = createAsyncThunk<
+  undefined,
+  undefined,
+  { rejectValue: string }
+>("auth/deleteAvatar", async (_, { rejectWithValue }) => {
+  try {
+    await apiFetch("/api/v1/me/avatar", { method: "DELETE" })
+    return undefined
+  } catch (err: unknown) {
+    if (err instanceof ApiError) {
+      return rejectWithValue(err.message)
+    }
+    return rejectWithValue("Failed to delete avatar.")
+  }
+})
+
+/**
+ * Fetches avatar bytes and returns an object URL.
+ * Not a thunk — call from components directly.
+ *
+ * `etag` is sent as If-None-Match only when the caller already has a URL
+ * to keep: on a 304 the caller must not replace its current image.
+ * localStorage caching is not needed — /me supplies the authoritative
+ * etag in user.avatar.etag.
+ */
+export async function fetchAvatarUrl(
+  etag?: string | null,
+): Promise<{ url: string; etag: string | null }> {
+  const headers: Record<string, string> = {}
+  if (etag) {
+    headers["If-None-Match"] = etag
+  }
+
+  const response = await apiFetchBinary("/api/v1/me/avatar", { headers })
+
+  if (response.status === 304) {
+    // Unchanged — caller keeps its existing object URL.
+    return { url: "", etag: null }
+  }
+
+  const newETag = response.headers.get("ETag")
+  const blob = await response.blob()
+  return { url: URL.createObjectURL(blob), etag: newETag }
+}
+
 export const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -396,6 +531,81 @@ export const authSlice = createSlice({
       .addCase(deleteAccountAsync.rejected, (state, action) => {
         state.isLoading = false
         state.error = action.payload ?? "Account deletion failed"
+      })
+      // --- Profile operations ---
+      .addCase(patchProfileAsync.pending, (state) => {
+        state.isLoading = true
+        state.error = null
+        state.successMessage = null
+      })
+      .addCase(patchProfileAsync.fulfilled, (state, action: PayloadAction<User>) => {
+        state.isLoading = false
+        state.user = action.payload
+        state.successMessage = "Профиль обновлён."
+      })
+      .addCase(patchProfileAsync.rejected, (state, action) => {
+        state.isLoading = false
+        state.error = action.payload ?? "Failed to update profile"
+      })
+      .addCase(putAddressAsync.pending, (state) => {
+        state.isLoading = true
+        state.error = null
+        state.successMessage = null
+      })
+      .addCase(putAddressAsync.fulfilled, (state, action: PayloadAction<User>) => {
+        state.isLoading = false
+        state.user = action.payload
+        state.successMessage = "Адрес сохранён."
+      })
+      .addCase(putAddressAsync.rejected, (state, action) => {
+        state.isLoading = false
+        state.error = action.payload ?? "Failed to save address"
+      })
+      .addCase(deleteAddressAsync.pending, (state) => {
+        state.isLoading = true
+        state.error = null
+        state.successMessage = null
+      })
+      .addCase(deleteAddressAsync.fulfilled, (state) => {
+        state.isLoading = false
+        if (state.user) {
+          state.user.address = null
+        }
+        state.successMessage = "Адрес удалён."
+      })
+      .addCase(deleteAddressAsync.rejected, (state, action) => {
+        state.isLoading = false
+        state.error = action.payload ?? "Failed to delete address"
+      })
+      .addCase(uploadAvatarAsync.pending, (state) => {
+        state.isLoading = true
+        state.error = null
+        state.successMessage = null
+      })
+      .addCase(uploadAvatarAsync.fulfilled, (state, action: PayloadAction<User>) => {
+        state.isLoading = false
+        state.user = action.payload
+        state.successMessage = "Аватар загружен."
+      })
+      .addCase(uploadAvatarAsync.rejected, (state, action) => {
+        state.isLoading = false
+        state.error = action.payload ?? "Failed to upload avatar"
+      })
+      .addCase(deleteAvatarAsync.pending, (state) => {
+        state.isLoading = true
+        state.error = null
+        state.successMessage = null
+      })
+      .addCase(deleteAvatarAsync.fulfilled, (state) => {
+        state.isLoading = false
+        if (state.user) {
+          state.user.avatar = null
+        }
+        state.successMessage = "Аватар удалён."
+      })
+      .addCase(deleteAvatarAsync.rejected, (state, action) => {
+        state.isLoading = false
+        state.error = action.payload ?? "Failed to delete avatar"
       })
   },
 })
