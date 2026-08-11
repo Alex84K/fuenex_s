@@ -10,6 +10,7 @@ import { ForgotPasswordPage } from "./features/auth/pages/ForgotPasswordPage"
 import { LoginPage } from "./features/auth/pages/LoginPage"
 import { ProfilePage } from "./features/auth/pages/ProfilePage"
 import { ProjectsPage } from "./features/projects/pages/ProjectsPage"
+import { ProjectDetailPage } from "./features/projects/pages/ProjectDetailPage"
 import { RegisterPage } from "./features/auth/pages/RegisterPage"
 import { ResetPasswordPage } from "./features/auth/pages/ResetPasswordPage"
 import { VerifyEmailPage } from "./features/auth/pages/VerifyEmailPage"
@@ -113,6 +114,16 @@ export const App: FC = () => {
             <ProtectedRoute>
               <Shell>
                 <ProjectsPage />
+              </Shell>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/projects/:id"
+          element={
+            <ProtectedRoute>
+              <Shell>
+                <ProjectDetailPage />
               </Shell>
             </ProtectedRoute>
           }

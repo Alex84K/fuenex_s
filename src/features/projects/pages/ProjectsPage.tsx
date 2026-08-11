@@ -1,8 +1,10 @@
 import type { FC } from "react"
 import { useMemo, useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { ApiError } from "../../../utils/api"
 import { DeleteProjectModal } from "../components/DeleteProjectModal"
 import { ProjectFormModal } from "../components/ProjectFormModal"
+import { formatDateTime } from "../format"
 import { useGetProjects } from "../projects.hooks"
 import {
   PROJECT_STATUSES,
@@ -11,16 +13,9 @@ import {
   type Project,
 } from "../types"
 
-// The server stores timestamps as RFC3339 with millisecond precision
-// (platform/timefmt). Render them for the user's locale.
-const formatDateTime = (iso: string): string => {
-  const d = new Date(iso)
-  return Number.isNaN(d.getTime())
-    ? iso
-    : d.toLocaleString("ru-RU", { dateStyle: "short", timeStyle: "short" })
-}
 
 export const ProjectsPage: FC = () => {
+  const navigate = useNavigate()
   const { data: projects = [], isLoading, isError, error } = useGetProjects()
 
   const [search, setSearch] = useState("")
@@ -160,23 +155,35 @@ export const ProjectsPage: FC = () => {
                 </div>
 
                 <div className="d-flex flex-column align-items-end gap-2">
-                  <div className="btn-group btn-group-sm" role="group" aria-label="Действия">
+                  <div className="d-flex flex-wrap align-items-center justify-content-end gap-2">
                     <button
                       type="button"
-                      className="btn btn-outline-primary"
-                      title="Редактировать"
-                      onClick={() => { setEditTarget(p) }}
+                      className="btn btn-primary btn-sm fw-semibold"
+                      onClick={() => {
+                        void navigate(`/projects/${p.id}`)
+                      }}
                     >
-                      <i className="bi bi-pencil" />
+                      <i className="bi bi-box-arrow-up-right me-1" />
+                      Открыть
                     </button>
-                    <button
-                      type="button"
-                      className="btn btn-outline-danger"
-                      title="Удалить"
-                      onClick={() => { setDeleteTarget(p) }}
-                    >
-                      <i className="bi bi-trash" />
-                    </button>
+                    <div className="btn-group btn-group-sm" role="group" aria-label="Действия">
+                      <button
+                        type="button"
+                        className="btn btn-outline-primary"
+                        title="Редактировать"
+                        onClick={() => { setEditTarget(p) }}
+                      >
+                        <i className="bi bi-pencil" />
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-outline-danger"
+                        title="Удалить"
+                        onClick={() => { setDeleteTarget(p) }}
+                      >
+                        <i className="bi bi-trash" />
+                      </button>
+                    </div>
                   </div>
                   <small className="text-muted">
                     <i className="bi bi-clock me-1" />
