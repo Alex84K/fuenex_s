@@ -557,9 +557,6 @@ export const LandingPage: FC = () => {
         <div className="landing-container landing-footer__inner">
           <div className="landing-footer__brand">
             <span className="landing-brand__logo">FUENEX</span>
-            <span className="landing-brand__sub">
-              Digital Solutions for the Future
-            </span>
           </div>
           <nav className="landing-footer__links" aria-label="Ссылки футера">
             <a
