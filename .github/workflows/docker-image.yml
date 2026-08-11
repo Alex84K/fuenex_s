@@ -1,18 +1,83 @@
-name: Docker Image CI
+name: Docker Build and Deploy - Smart Soft System
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
+
+env:
+  DOCKER_IMAGE: "fuenex_sng_web"
+  DEPLOY_DIR: "/root/fuenex_sng_web"
+  CONTAINER_NAME: "fuenex_sng_web"
+  HOST_PORT: "5504"
+  CONTAINER_PORT: "5504"
 
 jobs:
-
-  build:
-
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+      # Шаг 1: Получение кода
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Шаг 2: Установка Docker Buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Шаг 3: Сборка Docker-образа
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ env.DOCKER_IMAGE }}:latest .
+
+      # Шаг 4: Сохранение образа в tar и исправление прав
+      - name: Save Docker image
+        run: |
+          docker save ${{ env.DOCKER_IMAGE }}:latest -o ${{ env.DOCKER_IMAGE }}.tar
+          # Даем права на чтение, чтобы экшен SCP смог забрать файл
+          sudo chmod 644 ${{ env.DOCKER_IMAGE }}.tar
+
+      # Шаг 5: Копирование файлов на удаленный сервер через КЛЮЧ
+      - name: Copy files to remote server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "${{ env.DOCKER_IMAGE }}.tar,docker-compose.yml"
+          target: ${{ env.DEPLOY_DIR }}
+          overwrite: true
+
+      # Шаг 6: Развертывание и проверка на сервере через КЛЮЧ
+      - name: Deploy and Verify on Server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ${{ env.DEPLOY_DIR }}
+
+            # 1. Проверка наличия файлов
+            if [ ! -f "${{ env.DOCKER_IMAGE }}.tar" ] || [ ! -f "docker-compose.yml" ]; then
+              echo "Error: Files not found after copy!"
+              exit 1
+            fi
+
+            # 2. Загрузка образа
+            docker load -i ${{ env.DOCKER_IMAGE }}.tar
+
+            # 3. Перезапуск контейнера
+            docker-compose down || true
+            docker-compose up -d
+
+            # 4. Очистка (удаление архива и старых образов)
+            rm ${{ env.DOCKER_IMAGE }}.tar
+            docker image prune -f
+
+            # 5. Проверка статуса
+            echo "=== Container Status ==="
+            docker ps | grep ${{ env.CONTAINER_NAME }}
+            echo "=== Recent Logs ==="
+            docker logs --tail 20 ${{ env.CONTAINER_NAME }}
