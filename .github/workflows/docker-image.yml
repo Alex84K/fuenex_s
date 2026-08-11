@@ -12,6 +12,10 @@ env:
   CONTAINER_NAME: "fuenex_sng_web"
   HOST_PORT: "5504"
   CONTAINER_PORT: "5504"
+  # Full origin of the backend API for cross-origin deployments
+  # (e.g. https://sng-fuenex.shk.solutions:8089). Set as a repository
+  # variable in GitHub; empty → same-origin calls. See src/utils/api.ts.
+  VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
 
 jobs:
   build-and-deploy:
@@ -29,7 +33,7 @@ jobs:
       # Шаг 3: Сборка Docker-образа
       - name: Build Docker image
         run: |
-          docker build -t ${{ env.DOCKER_IMAGE }}:latest .
+          docker build -t ${{ env.DOCKER_IMAGE }}:latest --build-arg VITE_API_BASE_URL=${{ env.VITE_API_BASE_URL }} .
 
       # Шаг 4: Сохранение образа в tar и исправление прав
       - name: Save Docker image

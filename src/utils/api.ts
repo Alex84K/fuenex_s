@@ -1,3 +1,5 @@
+import { buildApiUrl } from "./apiConfig"
+
 export type User = {
   id: string
   email: string
@@ -108,7 +110,7 @@ export async function apiFetch<T = unknown>(
     headers.set("Authorization", `Bearer ${token}`)
   }
 
-  const response = await fetch(endpoint, {
+  const response = await fetch(buildApiUrl(endpoint), {
     ...options,
     headers,
   })
@@ -129,7 +131,7 @@ export async function apiFetch<T = unknown>(
         if (!isRefreshing) {
           isRefreshing = true
           try {
-            const refreshRes = await fetch("/api/v1/auth/refresh", {
+            const refreshRes = await fetch(buildApiUrl("/api/v1/auth/refresh"), {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ refreshToken }),
@@ -201,7 +203,7 @@ export async function apiFetchBinary(
     headers.set("Authorization", `Bearer ${token}`)
   }
 
-  const response = await fetch(endpoint, { ...options, headers })
+  const response = await fetch(buildApiUrl(endpoint), { ...options, headers })
 
   if (response.status === 304) {
     return response
@@ -213,7 +215,7 @@ export async function apiFetchBinary(
       if (!isRefreshing) {
         isRefreshing = true
         try {
-          const refreshRes = await fetch("/api/v1/auth/refresh", {
+          const refreshRes = await fetch(buildApiUrl("/api/v1/auth/refresh"), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ refreshToken }),

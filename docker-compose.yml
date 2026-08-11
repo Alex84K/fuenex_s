@@ -1,6 +1,12 @@
 services:
   fuenex_admin:
-    build: .
+    build:
+      context: .
+      args:
+        # Full origin of the backend API for cross-origin deployments,
+        # e.g. VITE_API_BASE_URL=https://sng-fuenex.shk.solutions:8089.
+        # Empty (default) → same-origin calls.
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-}
     image: fuenex_sng_web:latest
     container_name: fuenex_sng_web
     ports:

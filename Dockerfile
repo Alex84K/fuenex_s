@@ -3,6 +3,10 @@ WORKDIR /app
 COPY package*.json ./ 
 RUN npm install --legacy-peer-deps
 COPY . .
+# VITE_API_BASE_URL — full origin of the backend API for cross-origin
+# deployments (see src/utils/api.ts); empty for same-origin (nginx proxy).
+ARG VITE_API_BASE_URL=""
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 RUN npm run build 
 FROM nginx:alpine
 COPY --from=builder /app/dist /usr/share/nginx/html
