@@ -9,6 +9,7 @@ import { PublicOnlyRoute } from "./features/auth/components/PublicOnlyRoute"
 import { ForgotPasswordPage } from "./features/auth/pages/ForgotPasswordPage"
 import { LoginPage } from "./features/auth/pages/LoginPage"
 import { ProfilePage } from "./features/auth/pages/ProfilePage"
+import { ProjectsPage } from "./features/projects/pages/ProjectsPage"
 import { RegisterPage } from "./features/auth/pages/RegisterPage"
 import { ResetPasswordPage } from "./features/auth/pages/ResetPasswordPage"
 import { VerifyEmailPage } from "./features/auth/pages/VerifyEmailPage"
@@ -106,6 +107,16 @@ export const App: FC = () => {
           }
         />
 
+        <Route
+          path="/projects"
+          element={
+            <ProtectedRoute>
+              <Shell>
+                <ProjectsPage />
+              </Shell>
+            </ProtectedRoute>
+          }
+        />
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

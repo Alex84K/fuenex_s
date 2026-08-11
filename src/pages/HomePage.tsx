@@ -18,9 +18,14 @@ export const HomePage: FC = () => {
             <div className="card shadow border-0 rounded-4 p-4 d-inline-block text-start">
               <h5 className="fw-bold">С возвращением!</h5>
               <p className="mb-3 text-muted">Вы вошли как: {user?.email}</p>
-              <Link to="/profile" className="btn btn-primary fw-bold">
-                Перейти в личный кабинет
-              </Link>
+              <div className="d-flex flex-wrap gap-2">
+                <Link to="/projects" className="btn btn-primary fw-bold">
+                  Мои проекты
+                </Link>
+                <Link to="/profile" className="btn btn-outline-primary fw-bold">
+                  Личный кабинет
+                </Link>
+              </div>
             </div>
           ) : (
             <div className="d-flex justify-content-center gap-3">
