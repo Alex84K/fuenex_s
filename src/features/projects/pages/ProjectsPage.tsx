@@ -152,6 +152,34 @@ export const ProjectsPage: FC = () => {
                       {p.note}
                     </div>
                   )}
+
+                  {/* The planner's counters on the card (DESIGN_PLANNER.md §8.2):
+                      "сколько работы на объекте и сколько сделано" — одно число
+                      из двух частей. */}
+                  {typeof p.taskCount === "number" && p.taskCount > 0 && (
+                    <div className="d-flex align-items-center gap-2 mt-2">
+                      <i className="bi bi-list-check text-muted" />
+                      <div
+                        className="progress"
+                        style={{ width: "10rem", height: "0.5rem" }}
+                        role="progressbar"
+                        aria-label={`Выполнено ${String(p.taskDoneCount ?? 0)} из ${String(p.taskCount)} задач`}
+                        aria-valuenow={Math.round(((p.taskDoneCount ?? 0) / p.taskCount) * 100)}
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                      >
+                        <div
+                          className="progress-bar bg-success"
+                          style={{
+                            width: `${String(Math.round(((p.taskDoneCount ?? 0) / p.taskCount) * 100))}%`,
+                          }}
+                        />
+                      </div>
+                      <span className="text-muted small">
+                        {p.taskDoneCount ?? 0} из {p.taskCount}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="d-flex flex-column align-items-end gap-2">

@@ -1,0 +1,86 @@
+[
+  {
+    "name": "basic example from DESIGN_ESTIMATE.md §10",
+    "netMinor": 995200,
+    "costMinor": 559800,
+    "taxRateBp": 0,
+    "discountBp": 500,
+    "want": {
+      "discountMinor": 49760,
+      "netAfterDiscountMinor": 945440,
+      "taxMinor": 0,
+      "grossMinor": 945440,
+      "marginMinor": 385640
+    }
+  },
+  {
+    "name": "discount 5% then tax 20% — tax applies after discount, margin excludes tax",
+    "netMinor": 995200,
+    "costMinor": 559800,
+    "taxRateBp": 2000,
+    "discountBp": 500,
+    "want": {
+      "discountMinor": 49760,
+      "netAfterDiscountMinor": 945440,
+      "taxMinor": 189088,
+      "grossMinor": 1134528,
+      "marginMinor": 385640
+    }
+  },
+  {
+    "name": "cost above net — margin goes negative, not clamped to zero",
+    "netMinor": 50000,
+    "costMinor": 100000,
+    "taxRateBp": 0,
+    "discountBp": 0,
+    "want": {
+      "discountMinor": 0,
+      "netAfterDiscountMinor": 50000,
+      "taxMinor": 0,
+      "grossMinor": 50000,
+      "marginMinor": -50000
+    }
+  },
+  {
+    "name": "discountBp at its maximum (10000 = 100%) — gross zero, margin still negative",
+    "netMinor": 100000,
+    "costMinor": 60000,
+    "taxRateBp": 0,
+    "discountBp": 10000,
+    "want": {
+      "discountMinor": 100000,
+      "netAfterDiscountMinor": 0,
+      "taxMinor": 0,
+      "grossMinor": 0,
+      "marginMinor": -60000
+    }
+  },
+  {
+    "name": "exact half-minor-unit discount rounds up (half away from zero, DESIGN_ESTIMATE.md §6.2)",
+    "netMinor": 1,
+    "costMinor": 0,
+    "taxRateBp": 0,
+    "discountBp": 5000,
+    "want": {
+      "discountMinor": 1,
+      "netAfterDiscountMinor": 0,
+      "taxMinor": 0,
+      "grossMinor": 0,
+      "marginMinor": 0
+    }
+  },
+  {
+    "name": "empty estimate — all seven numbers zero regardless of rates",
+    "netMinor": 0,
+    "costMinor": 0,
+    "taxRateBp": 2000,
+    "discountBp": 500,
+    "want": {
+      "discountMinor": 0,
+      "netAfterDiscountMinor": 0,
+      "taxMinor": 0,
+      "grossMinor": 0,
+      "marginMinor": 0
+    }
+  }
+]

@@ -12,6 +12,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "start": "vite",
+    "sync:fixtures": "node scripts/sync-estimate-fixtures.mjs",
     "test": "vitest --run",
     "type-check": "tsc -b --noEmit"
   },

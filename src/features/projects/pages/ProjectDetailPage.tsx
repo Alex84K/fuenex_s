@@ -2,14 +2,21 @@ import type { FC } from "react"
 import { useState } from "react"
 import { Link, useParams } from "react-router-dom"
 import { ApiError } from "../../../utils/api"
+import { EstimatesTab } from "../../../components/estimates/EstimatesTab"
+import { PlannerTab } from "../../../components/planner/PlannerTab"
 import { ProjectFormModal } from "../components/ProjectFormModal"
 import { formatDateTime } from "../format"
 import { useGetProject } from "../projects.hooks"
-import { PROJECT_STATUS_BADGE, PROJECT_STATUS_LABELS, type Project } from "../types"
+import {
+  PROJECT_STATUS_BADGE,
+  PROJECT_STATUS_LABELS,
+  type Project,
+} from "../types"
 
-// The container's three parts (DESIGN_PROJECT.md §1.1) — measurement,
-// tracker, estimate — are not implemented on the server yet, so their tabs
-// are placeholders until each feature lands.
+// The container's two parts (DESIGN_PROJECT.md §1.1) — measurement is not
+// implemented on the server yet, so its tab stays a placeholder until the
+// feature lands. Estimate (EstimatesTab) and the planner (PlannerTab) are
+// full features.
 const TABS = [
   { key: "info", label: "Информация" },
   { key: "measurement", label: "Замеры" },
@@ -80,8 +87,7 @@ export const ProjectDetailPage: FC = () => {
           {message}
         </div>
         <Link to="/projects" className="btn btn-outline-secondary">
-          <i className="bi bi-arrow-left me-1" />
-          К списку проектов
+          <i className="bi bi-arrow-left me-1" />К списку проектов
         </Link>
       </div>
     )
@@ -89,14 +95,18 @@ export const ProjectDetailPage: FC = () => {
 
   return (
     <div className="container py-5">
-      <Link to="/projects" className="text-decoration-none small d-inline-block mb-3">
-        <i className="bi bi-arrow-left me-1" />
-        К списку проектов
+      <Link
+        to="/projects"
+        className="text-decoration-none small d-inline-block mb-3"
+      >
+        <i className="bi bi-arrow-left me-1" />К списку проектов
       </Link>
 
       <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
         <div className="d-flex align-items-center flex-wrap gap-2">
-          <h2 className="fw-bold mb-0 text-break">{project.title || "Без названия"}</h2>
+          <h2 className="fw-bold mb-0 text-break">
+            {project.title || "Без названия"}
+          </h2>
           <span className={`badge ${PROJECT_STATUS_BADGE[project.status]}`}>
             {PROJECT_STATUS_LABELS[project.status]}
           </span>
@@ -116,7 +126,7 @@ export const ProjectDetailPage: FC = () => {
       {/* Tabs are driven by React state — Bootstrap's JS bundle is not
           loaded, and nav-tabs styling is pure CSS. */}
       <ul className="nav nav-tabs">
-        {TABS.map((t) => (
+        {TABS.map(t => (
           <li className="nav-item" key={t.key}>
             <button
               type="button"
@@ -137,16 +147,17 @@ export const ProjectDetailPage: FC = () => {
         {activeTab === "measurement" && (
           <ComingSoonTab text="Раздел «Замеры» появится вместе с фичей замера — сейчас она в проектировании." />
         )}
-        {activeTab === "planner" && (
-          <ComingSoonTab text="Раздел «Планировщик» появится вместе с фичей трекера." />
-        )}
-        {activeTab === "estimate" && (
-          <ComingSoonTab text="Раздел «Сметы» появится вместе с фичей сметы." />
-        )}
+        {activeTab === "planner" && <PlannerTab project={project} />}
+        {activeTab === "estimate" && <EstimatesTab project={project} />}
       </div>
 
       {editOpen && (
-        <ProjectFormModal project={project} onClose={() => { setEditOpen(false) }} />
+        <ProjectFormModal
+          project={project}
+          onClose={() => {
+            setEditOpen(false)
+          }}
+        />
       )}
     </div>
   )

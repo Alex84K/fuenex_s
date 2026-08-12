@@ -31,7 +31,10 @@ export const ContactModal: FC<Props> = ({ isOpen, onClose }) => {
       style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
     >
       <div className="modal-dialog modal-dialog-centered">
-        <div className="modal-content border-0 shadow-lg" style={{ borderRadius: "16px" }}>
+        <div
+          className="modal-content border-0 shadow-lg"
+          style={{ borderRadius: "16px" }}
+        >
           <div className="modal-header border-0 pb-0">
             <h5 className="modal-title fw-bold" style={{ color: "#001C66" }}>
               Связаться с нами
@@ -55,7 +58,7 @@ export const ContactModal: FC<Props> = ({ isOpen, onClose }) => {
                   className="form-control"
                   placeholder="Иван Иванов"
                   value={name}
-                  onChange={(e) => {
+                  onChange={e => {
                     setName(e.target.value)
                   }}
                   required
@@ -68,20 +71,22 @@ export const ContactModal: FC<Props> = ({ isOpen, onClose }) => {
                   className="form-control"
                   placeholder="name@example.com"
                   value={email}
-                  onChange={(e) => {
+                  onChange={e => {
                     setEmail(e.target.value)
                   }}
                   required
                 />
               </div>
               <div className="mb-3">
-                <label className="form-label small fw-semibold">Сообщение</label>
+                <label className="form-label small fw-semibold">
+                  Сообщение
+                </label>
                 <textarea
                   className="form-control"
                   rows={4}
                   placeholder="Опишите ваш вопрос или задачу..."
                   value={message}
-                  onChange={(e) => {
+                  onChange={e => {
                     setMessage(e.target.value)
                   }}
                   required
@@ -93,16 +98,22 @@ export const ContactModal: FC<Props> = ({ isOpen, onClose }) => {
                   className="form-check-input"
                   id="contact-agree"
                   checked={agree}
-                  onChange={(e) => {
+                  onChange={e => {
                     setAgree(e.target.checked)
                   }}
                   required
                 />
-                <label className="form-check-label small text-muted" htmlFor="contact-agree">
+                <label
+                  className="form-check-label small text-muted"
+                  htmlFor="contact-agree"
+                >
                   Я согласен на обработку персональных данных
                 </label>
               </div>
-              <button type="submit" className="btn btn-custom-primary w-100 fw-bold">
+              <button
+                type="submit"
+                className="btn btn-custom-primary w-100 fw-bold"
+              >
                 Отправить сообщение <i className="bi bi-send ms-1"></i>
               </button>
             </form>

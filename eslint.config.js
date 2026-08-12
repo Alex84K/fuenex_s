@@ -20,6 +20,8 @@ const eslintConfig = config(
       "**/.tmp/",
       "**/.yarn/",
       "**/coverage/",
+      // Dev-only scripts (plain .mjs, outside the TS project).
+      "**/scripts/",
     ],
   },
   {

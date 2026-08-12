@@ -14,7 +14,7 @@ const ContactModal: FC<{ isOpen: boolean; onClose: () => void }> = ({
       if (e.key === "Escape") onClose()
     }
     if (isOpen) document.addEventListener("keydown", handleKey)
-    return () => document.removeEventListener("keydown", handleKey)
+    return () => { document.removeEventListener("keydown", handleKey); }
   }, [isOpen, onClose])
 
   if (!isOpen) return null
@@ -106,9 +106,9 @@ export const LandingPage: FC = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20)
+    const onScroll = () => { setScrolled(window.scrollY > 20); }
     window.addEventListener("scroll", onScroll)
-    return () => window.removeEventListener("scroll", onScroll)
+    return () => { window.removeEventListener("scroll", onScroll); }
   }, [])
 
   const scrollTo = (id: string) => {
@@ -216,7 +216,7 @@ export const LandingPage: FC = () => {
             <button
               id="landing-nav-contact"
               className="landing-btn-primary"
-              onClick={() => setContactOpen(true)}
+              onClick={() => { setContactOpen(true); }}
             >
               Связаться
             </button>
@@ -227,7 +227,7 @@ export const LandingPage: FC = () => {
             className={`landing-hamburger${menuOpen ? " is-active" : ""}`}
             aria-label="Открыть меню"
             aria-expanded={menuOpen}
-            onClick={() => setMenuOpen((v) => !v)}
+            onClick={() => { setMenuOpen((v) => !v); }}
           >
             <span />
             <span />
@@ -283,7 +283,7 @@ export const LandingPage: FC = () => {
               <Link
                 to="/login"
                 className="landing-mobile-menu__link"
-                onClick={() => setMenuOpen(false)}
+                onClick={() => { setMenuOpen(false); }}
               >
                 Войти
               </Link>
@@ -324,7 +324,7 @@ export const LandingPage: FC = () => {
               <button
                 id="landing-hero-contact"
                 className="landing-btn-outline landing-btn-lg"
-                onClick={() => setContactOpen(true)}
+                onClick={() => { setContactOpen(true); }}
               >
                 Связаться с нами
               </button>
@@ -531,7 +531,7 @@ export const LandingPage: FC = () => {
                   className="landing-faq__question"
                   aria-expanded={openFaq === i}
                   aria-controls={`faq-answer-${i}`}
-                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  onClick={() => { setOpenFaq(openFaq === i ? null : i); }}
                 >
                   {item.q}
                   <span className="landing-faq__icon" aria-hidden="true">
@@ -574,7 +574,7 @@ export const LandingPage: FC = () => {
             </Link>
             <button
               className="landing-footer__link landing-footer__link--btn"
-              onClick={() => setContactOpen(true)}
+              onClick={() => { setContactOpen(true); }}
             >
               Контакты
             </button>
@@ -587,7 +587,7 @@ export const LandingPage: FC = () => {
 
       <ContactModal
         isOpen={contactOpen}
-        onClose={() => setContactOpen(false)}
+        onClose={() => { setContactOpen(false); }}
       />
     </div>
   )

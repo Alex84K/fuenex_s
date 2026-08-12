@@ -38,6 +38,12 @@ export type Project = {
   note: string
   createdAt: string
   updatedAt: string
+  // The planner's contribution to the project LIST (DESIGN_PLANNER.md §8.2):
+  // one LEFT JOIN, two counters. Present only in GET /api/v1/projects —
+  // GET /api/v1/projects/{id} never carries them, so they are optional
+  // here and read as 0 when absent.
+  taskCount?: number
+  taskDoneCount?: number
 }
 
 // PUT body — all six fields required (an absent field would silently mean
