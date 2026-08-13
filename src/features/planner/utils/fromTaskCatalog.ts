@@ -2,10 +2,11 @@ import { uuidv7 } from "../../../utils/uuid"
 import type { TaskCatalogItem, TaskRequest, TaskTemplateItem } from "../types"
 
 // Copy-by-value into the task list (DESIGN_PLANNER.md §5): a fresh UUIDv7
-// id and the text fields. Status, progress and assignee are deliberately
-// NOT carried — a catalog row or a template line describes work, not its
-// state (D10). The applied task is born in todo / 0 % / nobody, exactly as
-// the server would create it.
+// id and the text fields. Status, progress, assignee and deadline are
+// deliberately NOT carried — a catalog row or a template line describes
+// work, not its state or a schedule (D10, RECARCH_DEADLINE.md §8). The
+// applied task is born in todo / 0 % / nobody / no deadline, exactly as the
+// server would create it.
 export const taskFromCatalogItem = (
   c: TaskCatalogItem,
   position: number,
@@ -17,6 +18,7 @@ export const taskFromCatalogItem = (
   progressPct: 0,
   assignee: "",
   position,
+  deadline: "",
 })
 
 // Template items → task requests. Reusing template ids would point at
@@ -38,4 +40,5 @@ export const tasksFromTemplate = (
     progressPct: 0,
     assignee: "",
     position: startPosition + i,
+    deadline: "",
   }))

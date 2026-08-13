@@ -15,6 +15,7 @@ const makeTask = (overrides: Partial<Task> = {}): Task => ({
   progressPct: 0,
   assignee: "",
   position: 7, // server values are NOT normalized — the client rewrites them
+  deadline: "",
   createdAt: "2026-08-12T10:00:00.000Z",
   updatedAt: "2026-08-12T10:00:00.000Z",
   ...overrides,
@@ -28,6 +29,7 @@ describe("buildTaskListBody", () => {
         id: "0198f2c1-8000-7abc-9000-000000000011",
         title: "Стяжка",
         position: 999,
+        deadline: "2026-08-20",
       }),
     ])
     expect(body).toEqual([
@@ -39,6 +41,7 @@ describe("buildTaskListBody", () => {
         progressPct: 0,
         assignee: "",
         position: 0,
+        deadline: "",
       },
       {
         id: "0198f2c1-8000-7abc-9000-000000000011",
@@ -48,6 +51,7 @@ describe("buildTaskListBody", () => {
         progressPct: 0,
         assignee: "",
         position: 1,
+        deadline: "2026-08-20",
       },
     ])
   })

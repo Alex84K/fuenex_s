@@ -81,10 +81,10 @@ export const EstimatesTab: FC<{ project: Project }> = ({ project }) => {
   return (
     <div>
       <ul className="nav nav-pills mb-3">
-        <li className="nav-item">
+        <li className="nav-item me-2">
           <button
             type="button"
-            className={`nav-link${subTab === "estimates" ? " active" : ""}`}
+            className={`btn btn-primary btn-sm`}
             onClick={() => {
               request({ kind: "subtab", subTab: "estimates" })
             }}
@@ -92,10 +92,10 @@ export const EstimatesTab: FC<{ project: Project }> = ({ project }) => {
             Сметы
           </button>
         </li>
-        <li className="nav-item">
+        <li className="nav-item  me-2">
           <button
             type="button"
-            className={`nav-link${subTab === "catalog" ? " active" : ""}`}
+            className={`btn btn-primary btn-sm`}
             onClick={() => {
               request({ kind: "subtab", subTab: "catalog" })
             }}
@@ -103,10 +103,10 @@ export const EstimatesTab: FC<{ project: Project }> = ({ project }) => {
             Каталог
           </button>
         </li>
-        <li className="nav-item">
+        <li className="nav-item  me-2">
           <button
             type="button"
-            className={`nav-link${subTab === "templates" ? " active" : ""}`}
+            className={`btn btn-primary btn-sm`}
             onClick={() => {
               request({ kind: "subtab", subTab: "templates" })
             }}

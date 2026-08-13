@@ -32,10 +32,47 @@ export const TASK_STATUS_BADGE: Record<TaskStatus, string> = {
   done: "text-bg-success",
 }
 
+// A bucket derived from deadline vs. "today", never stored — client-only,
+// recomputed on render (RECARCH_DEADLINE.md §6.3/§12.4: the server has no
+// user timezone, so it never decides this). "none" is not a badge color —
+// components skip rendering one for it, the same way an empty assignee
+// renders "—" instead of a badge.
+export const DEADLINE_URGENCIES = [
+  "overdue",
+  "today",
+  "soon",
+  "later",
+  "none",
+] as const
+export type DeadlineUrgency = (typeof DEADLINE_URGENCIES)[number]
+
+export const DEADLINE_URGENCY_LABELS: Record<DeadlineUrgency, string> = {
+  overdue: "Просрочено",
+  today: "Сегодня",
+  soon: "Скоро",
+  later: "",
+  none: "",
+}
+
+// text-bg-danger's first use in this codebase (RECARCH_DEADLINE.md §6.3).
+export const DEADLINE_URGENCY_BADGE: Record<DeadlineUrgency, string> = {
+  overdue: "text-bg-danger",
+  today: "text-bg-warning",
+  soon: "text-bg-warning",
+  later: "text-bg-secondary",
+  none: "",
+}
+
 // GET /api/v1/projects/{id}/tasks · GET/PUT/PATCH /api/v1/tasks/{id} —
 // response. ownerId, deletedAt, rev and schemaVersion never leave the server.
 // Unlike estimateItemDTO, createdAt IS on the wire: a task is the planner's
 // node, and its "time" is when it landed on the object (R6, F-2).
+//
+// deadline is "" when unset — never null (RECARCH_DEADLINE.md §12.1): the
+// same "empty string, not the absence of the key" convention as assignee,
+// so a PATCH clearing it is an ordinary {"deadline": ""}. A calendar date
+// "YYYY-MM-DD", not a moment — no time-of-day, "today" is decided by the
+// browser, not the server (§12.2/§12.3).
 export type Task = {
   id: string
   projectId: string
@@ -45,6 +82,7 @@ export type Task = {
   progressPct: number
   assignee: string
   position: number
+  deadline: string
   createdAt: string
   updatedAt: string
 }
@@ -59,6 +97,7 @@ export type TaskInput = {
   progressPct: number
   assignee: string
   position: number
+  deadline: string
 }
 
 // One element of the collection PUT /api/v1/projects/{id}/tasks body — a
@@ -73,15 +112,24 @@ export type TaskRequest = {
   progressPct: number
   assignee: string
   position: number
+  deadline: string
 }
 
 // PATCH /api/v1/tasks/{id} — scalars only, explicit null is rejected by the
 // server. The status×progressPct pair is checked against the RESULTING state
-// (§7.3), so the client always sends both when either changes (D5).
+// (§7.3), so the client always sends both when either changes (D5). Clearing
+// deadline is {"deadline": ""}, an ordinary present value — never null
+// (§12.1).
 export type TaskPatch = Partial<
   Pick<
     Task,
-    "title" | "description" | "status" | "progressPct" | "assignee" | "position"
+    | "title"
+    | "description"
+    | "status"
+    | "progressPct"
+    | "assignee"
+    | "position"
+    | "deadline"
   >
 >
 

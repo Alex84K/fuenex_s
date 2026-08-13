@@ -13,6 +13,7 @@ const makeTask = (overrides: Partial<Task> = {}): Task => ({
   progressPct: 0,
   assignee: "",
   position: 0,
+  deadline: "",
   createdAt: "2026-08-12T10:00:00.000Z",
   updatedAt: "2026-08-12T10:00:00.000Z",
   ...overrides,

@@ -47,6 +47,7 @@ export const EditTaskModal: FC<Props> = ({
   const [title, setTitle] = useState(task?.title ?? "")
   const [description, setDescription] = useState(task?.description ?? "")
   const [assignee, setAssignee] = useState(task?.assignee ?? "")
+  const [deadline, setDeadline] = useState(task?.deadline ?? "")
   const [fieldErrors, setFieldErrors] = useState<{
     title?: string
     description?: string
@@ -82,6 +83,9 @@ export const EditTaskModal: FC<Props> = ({
       if (title !== task.title) patch.title = title
       if (description !== task.description) patch.description = description
       if (assignee !== task.assignee) patch.assignee = assignee
+      // "" is an ordinary present value here, same as every other field —
+      // clearing the deadline is not a null (RECARCH_DEADLINE.md §12.1).
+      if (deadline !== task.deadline) patch.deadline = deadline
       if (Object.keys(patch).length === 0) {
         onClose()
         return
@@ -101,6 +105,7 @@ export const EditTaskModal: FC<Props> = ({
       progressPct: 0,
       assignee,
       position: nextPosition,
+      deadline,
     }
     putTask.mutate(
       { projectId, id: uuidv7(), data: input },
@@ -199,6 +204,37 @@ export const EditTaskModal: FC<Props> = ({
                 выполнения ставьте в списке задач.
               </div>
             )}
+          </div>
+
+          <div className="mb-1">
+            <label className="form-label fw-semibold" htmlFor="task-deadline">
+              Дедлайн
+            </label>
+            <div className="input-group" style={{ maxWidth: "16rem" }}>
+              <input
+                id="task-deadline"
+                type="date"
+                className="form-control"
+                value={deadline}
+                onChange={e => {
+                  setDeadline(e.target.value)
+                }}
+              />
+              {deadline !== "" && (
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary"
+                  title="Убрать дедлайн"
+                  aria-label="Убрать дедлайн"
+                  onClick={() => {
+                    setDeadline("")
+                  }}
+                >
+                  <i className="bi bi-x-lg" />
+                </button>
+              )}
+            </div>
+            <div className="form-text">Необязательно.</div>
           </div>
         </div>
         <div className="modal-footer">

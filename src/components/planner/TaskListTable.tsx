@@ -1,7 +1,9 @@
 import type { FC } from "react"
 import { useEffect, useMemo, useState } from "react"
-import { formatDateTime } from "../../features/projects/format"
+import { formatDate, formatDateTime } from "../../features/projects/format"
 import {
+  DEADLINE_URGENCY_BADGE,
+  DEADLINE_URGENCY_LABELS,
   TASK_LIMITS,
   TASK_STATUS_BADGE,
   TASK_STATUS_LABELS,
@@ -9,6 +11,7 @@ import {
   type Task,
   type TaskStatus,
 } from "../../features/planner/types"
+import { deadlineUrgency } from "../../features/planner/utils/deadlineUrgency"
 import { ConfirmDeleteModal } from "../modals/ConfirmDeleteModal"
 
 type Props = {
@@ -110,6 +113,26 @@ export const TaskListTable: FC<Props> = ({
       return
     }
     setRemoveTarget(task)
+  }
+
+  // Recomputed on every render from wall-clock time, nothing polls or
+  // ticks (RECARCH_DEADLINE.md §6.2/§12.4) — "later" and "none" render as
+  // plain text, a badge only appears once a deadline is close enough to
+  // deserve one.
+  const deadlineCell = (task: Task) => {
+    if (task.deadline === "") return <span className="text-muted">—</span>
+    const urgency = deadlineUrgency(task.deadline)
+    const text = formatDate(task.deadline)
+    if (urgency === "later" || urgency === "none")
+      return <span className="text-muted small">{text}</span>
+    return (
+      <span
+        className={`badge ${DEADLINE_URGENCY_BADGE[urgency]}`}
+        title={DEADLINE_URGENCY_LABELS[urgency]}
+      >
+        {text}
+      </span>
+    )
   }
 
   const moveButtons = (index: number) => (
@@ -235,6 +258,9 @@ export const TaskListTable: FC<Props> = ({
               <th scope="col" style={{ width: "9rem" }}>
                 Исполнитель
               </th>
+              <th scope="col" style={{ width: "7rem" }}>
+                Дедлайн
+              </th>
               <th scope="col" style={{ width: "10rem" }}>
                 Статус
               </th>
@@ -252,7 +278,7 @@ export const TaskListTable: FC<Props> = ({
           </thead>
           <tbody>
             {visibleTasks.length === 0
-              ? emptyRow(8)
+              ? emptyRow(9)
               : visibleTasks.map(task => {
                   const index = tasks.indexOf(task)
                   return (
@@ -283,6 +309,7 @@ export const TaskListTable: FC<Props> = ({
                       <td className="small text-break">
                         {task.assignee || "—"}
                       </td>
+                      <td>{deadlineCell(task)}</td>
                       <td>
                         <select
                           className="form-select form-select-sm"
@@ -384,6 +411,7 @@ export const TaskListTable: FC<Props> = ({
                       >
                         {TASK_STATUS_LABELS[task.status]}
                       </span>
+                      {deadlineCell(task)}
                       <label className="form-check form-switch mb-0 ms-auto">
                         <input
                           className="form-check-input"

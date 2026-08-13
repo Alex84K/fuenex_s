@@ -29,6 +29,7 @@ describe("taskFromCatalogItem", () => {
       progressPct: 0,
       assignee: "",
       position: 4,
+      deadline: "",
     })
     expect(task.id).toMatch(
       /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}$/,
@@ -59,6 +60,7 @@ describe("tasksFromTemplate", () => {
     expect(tasks[0].status).toBe("todo")
     expect(tasks[0].progressPct).toBe(0)
     expect(tasks[0].assignee).toBe("")
+    expect(tasks[0].deadline).toBe("")
   })
 
   it("positions continue from the current list length — applying APPENDS (D6)", () => {

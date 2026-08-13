@@ -13,4 +13,5 @@ export const buildTaskListBody = (tasks: Task[]): TaskRequest[] =>
     progressPct: t.progressPct,
     assignee: t.assignee,
     position,
+    deadline: t.deadline,
   }))
