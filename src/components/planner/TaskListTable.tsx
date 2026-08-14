@@ -168,6 +168,17 @@ export const TaskListTable: FC<Props> = ({
     <div className="d-inline-flex gap-1">
       <button
         type="button"
+        className={`btn btn-sm ${task.status === "done" ? "btn-primary" : "btn-outline-secondary"}`}
+        title={task.status === "done" ? "Отметить как не выполненное" : "Отметить как выполненное"}
+        aria-label={task.status === "done" ? "Отметить как не выполненное" : "Отметить как выполненное"}
+        onClick={() => {
+          onToggleDone(task.id, task.status !== "done")
+        }}
+      >
+        <i className={`bi ${task.status === "done" ? "bi-check-lg" : "bi-check"}`} />
+      </button>
+      <button
+        type="button"
         className="btn btn-sm btn-outline-secondary"
         title="Редактировать"
         aria-label="Редактировать"
@@ -264,9 +275,6 @@ export const TaskListTable: FC<Props> = ({
               <th scope="col" style={{ width: "10rem" }}>
                 Статус
               </th>
-              <th scope="col" style={{ width: "4rem" }}>
-                Готово
-              </th>
               <th scope="col" style={{ width: "6rem" }}>
                 Прогресс
               </th>
@@ -278,14 +286,14 @@ export const TaskListTable: FC<Props> = ({
           </thead>
           <tbody>
             {visibleTasks.length === 0
-              ? emptyRow(9)
+              ? emptyRow(8)
               : visibleTasks.map(task => {
                   const index = tasks.indexOf(task)
                   return (
                     <tr
                       key={task.id}
                       className={
-                        task.status === "done" ? "text-muted" : undefined
+                        task.status === "done" ? "table-row-done" : undefined
                       }
                     >
                       <td>
@@ -325,17 +333,6 @@ export const TaskListTable: FC<Props> = ({
                             </option>
                           ))}
                         </select>
-                      </td>
-                      <td>
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          checked={task.status === "done"}
-                          aria-label={`Отметить: ${task.title || "Без названия"}`}
-                          onChange={e => {
-                            onToggleDone(task.id, e.target.checked)
-                          }}
-                        />
                       </td>
                       <td>
                         <div className="input-group input-group-sm">
@@ -380,7 +377,7 @@ export const TaskListTable: FC<Props> = ({
             visibleTasks.map(task => {
               const index = tasks.indexOf(task)
               return (
-                <div className="card shadow-sm" key={task.id}>
+                <div className={`card shadow-sm ${task.status === "done" ? "card-done" : ""}`} key={task.id}>
                   <div className="card-body p-3">
                     <div className="d-flex justify-content-between align-items-start gap-2 mb-2">
                       <div style={{ minWidth: 0 }}>
@@ -395,8 +392,8 @@ export const TaskListTable: FC<Props> = ({
                           </div>
                         )}
                       </div>
-                      <div className="d-inline-flex flex-column flex-shrink-0">
-                        <div className="d-flex gap-1 mb-1">
+                      <div className="d-inline-flex flex-column flex-shrink-0 gap-2">
+                        <div className="d-flex gap-1">
                           {moveButtons(index)}
                         </div>
                         <div className="d-flex gap-1 justify-content-end">
@@ -412,19 +409,6 @@ export const TaskListTable: FC<Props> = ({
                         {TASK_STATUS_LABELS[task.status]}
                       </span>
                       {deadlineCell(task)}
-                      <label className="form-check form-switch mb-0 ms-auto">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          role="switch"
-                          checked={task.status === "done"}
-                          aria-label={`Отметить: ${task.title || "Без названия"}`}
-                          onChange={e => {
-                            onToggleDone(task.id, e.target.checked)
-                          }}
-                        />
-                        <span className="form-check-label small">Готово</span>
-                      </label>
                     </div>
 
                     <div className="row g-2">

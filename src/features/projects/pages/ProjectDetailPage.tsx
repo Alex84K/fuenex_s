@@ -3,6 +3,7 @@ import { useState } from "react"
 import { Link, useParams } from "react-router-dom"
 import { ApiError } from "../../../utils/api"
 import { EstimatesTab } from "../../../components/estimates/EstimatesTab"
+import { MeasurementTab } from "../../../components/measurement/MeasurementTab"
 import { PlannerTab } from "../../../components/planner/PlannerTab"
 import { ProjectFormModal } from "../components/ProjectFormModal"
 import { formatDateTime } from "../format"
@@ -13,10 +14,9 @@ import {
   type Project,
 } from "../types"
 
-// The container's two parts (DESIGN_PROJECT.md §1.1) — measurement is not
-// implemented on the server yet, so its tab stays a placeholder until the
-// feature lands. Estimate (EstimatesTab) and the planner (PlannerTab) are
-// full features.
+// The container's parts (DESIGN_PROJECT.md §1.1): estimate (EstimatesTab),
+// the planner (PlannerTab) and measurement (MeasurementTab) are full
+// features; the tab list is shared (DESIGN_MEASUREMENT.md §1, D1).
 const TABS = [
   { key: "info", label: "Информация" },
   { key: "measurement", label: "Замеры" },
@@ -25,13 +25,6 @@ const TABS = [
 ] as const
 
 type TabKey = (typeof TABS)[number]["key"]
-
-const ComingSoonTab: FC<{ text: string }> = ({ text }) => (
-  <div className="text-center text-muted py-5">
-    <i className="bi bi-tools d-block fs-1 mb-3" />
-    {text}
-  </div>
-)
 
 const InfoTab: FC<{ project: Project }> = ({ project }) => {
   const rows: [string, string][] = [
@@ -144,9 +137,7 @@ export const ProjectDetailPage: FC = () => {
 
       <div className="tab-content py-4">
         {activeTab === "info" && <InfoTab project={project} />}
-        {activeTab === "measurement" && (
-          <ComingSoonTab text="Раздел «Замеры» появится вместе с фичей замера — сейчас она в проектировании." />
-        )}
+        {activeTab === "measurement" && <MeasurementTab project={project} />}
         {activeTab === "planner" && <PlannerTab project={project} />}
         {activeTab === "estimate" && <EstimatesTab project={project} />}
       </div>

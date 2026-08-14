@@ -46,11 +46,6 @@ export const Navbar: FC = () => {
         </button>
         <div className={`collapse navbar-collapse${menuOpen ? " show" : ""}`} id="navbarNav">
           <ul className="navbar-nav me-auto">
-            <li className="nav-item">
-              <Link className="nav-link" to="/" onClick={closeMenu}>
-                Главная
-              </Link>
-            </li>
             {isAuthenticated && (
               <>
                 <li className="nav-item">

@@ -387,7 +387,8 @@ export const EstimateEditorView: FC<Props> = ({
 
       {conflict && (
         <SaveConflictModal
-          estimate={conflict}
+          title="Смета изменилась в другом окне"
+          updatedAt={conflict.updatedAt}
           onClose={() => {
             setConflict(null)
           }}

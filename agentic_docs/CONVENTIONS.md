@@ -12,6 +12,7 @@ This document is a strict set of rules for the AI Agent. Always follow these con
 * **UI Components & Styling:** Always use **Bootstrap** (или `react-bootstrap`, *уточните здесь, если используете обертку*). 
     * Do NOT install or use Tailwind, Material UI, or custom CSS unless explicitly requested.
     * Utilize Bootstrap utility classes for layout, spacing, and minor adjustments.
+* **Canvas exception:** `konva` / `react-konva` are allowed **only** inside `src/components/measurement/contour/` (the contour editor canvas, `DESIGN_MEASUREMENT.md` D18). Any other use of a canvas library needs an explicit design decision first — the main bundle must stay free of Konva (it is loaded lazily via `React.lazy`).
 
 ---
 

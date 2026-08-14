@@ -1202,3 +1202,25 @@ body {
     font-size: 1.6rem;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   TASK LIST TABLE STYLES
+═══════════════════════════════════════════════════════════════ */
+.table-row-done {
+  background-color: #c1c1c1;
+  color: #94a3b8;
+}
+
+.table-row-done td {
+  color: #94a3b8;
+  opacity: 0.7;
+}
+
+.card-done {
+  background-color: #c1c1c1;
+  opacity: 0.75;
+}
+
+.card-done .card-body {
+  color: #94a3b8;
+}

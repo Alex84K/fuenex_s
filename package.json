@@ -22,8 +22,10 @@
     "@tanstack/react-query-devtools": "^5.101.4",
     "bootstrap": "^5.3.8",
     "bootstrap-icons": "^1.13.1",
+    "konva": "^10.3.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-konva": "^19.2.5",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.18.2"
   },

@@ -1,30 +1,38 @@
-import type { FC } from "react"
+import type { FC, ReactNode } from "react"
 import { formatDateTime } from "../../features/projects/format"
-import type { Estimate } from "../../features/estimates/types"
 import { ModalShell } from "./ModalShell"
 
 type Props = {
-  estimate: Estimate // the fresh server version that differs from baseUpdatedAt
+  // Shell title, entity-specific: «Смета изменилась в другом окне»,
+  // «Комплект замеров изменился в другом окне» (§11.3).
+  title: string
+  updatedAt: string // the fresh server version that differs from baseUpdatedAt
   onRead: () => void
   onOverwrite: () => void
   onClose: () => void
+  // Extra price-of-overwrite wording. The measurement set's PUT replaces a
+  // THREE-level subtree (set → surfaces → openings), so "overwrite" there
+  // deletes foreign surfaces — the caller names that (DESIGN §11.3).
+  overwriteNote?: ReactNode
 }
 
 // D11 conflict guard: the control GET before PUT found a different
 // updatedAt. The window narrows, it does not close (DESIGN §11.3).
 export const SaveConflictModal: FC<Props> = ({
-  estimate,
+  title,
+  updatedAt,
   onRead,
   onOverwrite,
   onClose,
+  overwriteNote,
 }) => (
-  <ModalShell title="Смета изменилась в другом окне" onClose={onClose}>
+  <ModalShell title={title} onClose={onClose}>
     <div className="modal-body">
       <p>
-        Смета была обновлена{" "}
-        <strong>{formatDateTime(estimate.updatedAt)}</strong>. Это может быть
-        правка из другого окна или другого устройства.
+        Данные обновлены <strong>{formatDateTime(updatedAt)}</strong>. Это может
+        быть правка из другого окна или другого устройства.
       </p>
+      {overwriteNote && <p className="mb-1">{overwriteNote}</p>}
       <ul className="mb-0">
         <li>
           <strong>Перечитать</strong> — заменить черновик серверной версией
