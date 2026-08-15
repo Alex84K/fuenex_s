@@ -20,7 +20,7 @@ const DEV_DEFAULT_API = "http://localhost:8089"
 // Прод-домены фронтенда → адрес API. Единственное место, где живёт
 // связка «страница → API»; новый домен добавляется здесь же.
 const PROD_API_BY_HOSTNAME: Record<string, string> = {
-  "sng-fuenex.shk.solutions": "https://stroylit.shk.solutions",
+  "stroylit.shk.solutions": "https://fuenex-go.shk.solutions",
 }
 
 function resolveApiBaseUrl(): string {
