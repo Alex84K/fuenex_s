@@ -34,6 +34,11 @@ import {
 } from "../../features/estimates/estimates.hooks"
 import { buildEstimateBody } from "../../features/estimates/utils/buildEstimateBody"
 import { fromTemplateItems } from "../../features/estimates/utils/fromCatalog"
+import {
+  useGetTasksByEstimate,
+  useReplaceTasksByEstimate,
+} from "../../features/planner/tasks.hooks"
+import { tasksFromEstimateItems } from "../../features/planner/utils/fromEstimateItems"
 import type {
   Estimate,
   EstimatePatch,
@@ -44,6 +49,7 @@ import { EstimateHeader } from "./EstimateHeader"
 import { EstimateItemsTable } from "./EstimateItemsTable"
 import { EstimateTotalsSummary } from "./EstimateTotalsSummary"
 import { ApplyTemplateModal } from "../modals/ApplyTemplateModal"
+import { ConfirmDeleteModal } from "../modals/ConfirmDeleteModal"
 import { EditEstimateItemModal } from "../modals/EditEstimateItemModal"
 import { SaveAsTemplateModal } from "../modals/SaveAsTemplateModal"
 import { SaveConflictModal } from "../modals/SaveConflictModal"
@@ -92,10 +98,22 @@ export const EstimateEditorView: FC<Props> = ({
   const [applyTemplateOpen, setApplyTemplateOpen] = useState(false)
   const [saveAsTemplateOpen, setSaveAsTemplateOpen] = useState(false)
   const [editItemId, setEditItemId] = useState<string | null>(null)
+  const [plannerConfirmOpen, setPlannerConfirmOpen] = useState(false)
+  const [plannerResult, setPlannerResult] = useState<{
+    created: number
+    replaced: boolean
+  } | null>(null)
   const overwriteRef = useRef(false)
 
   const id = mode === "edit" ? estimateId : null
   const { data: estimate, isLoading, isError, error } = useGetEstimate(id)
+
+  // Tasks hang off the estimate (ADR-013 decision 5) — the estimate's stages
+  // are read only to know whether one already exists: creating the planner
+  // over a non-empty list REPLACES it (collection PUT semantics), so the
+  // button asks first. Only needed in edit mode, where id is set.
+  const estimateTasks = useGetTasksByEstimate(id ?? undefined)
+  const replaceTasks = useReplaceTasksByEstimate()
 
   // create mode: an empty draft is minted once; leaving resets the editor.
   useEffect(() => {
@@ -272,6 +290,41 @@ export const EstimateEditorView: FC<Props> = ({
     }
   }
 
+  // «Создать планировщик» — generate one stage per estimate line (blank rows
+  // skipped) and write the list in ONE collection PUT, the same mechanics as
+  // applying a template (D6). Fully client-side: the endpoint already exists.
+  // The generated stages carry no item links — task_estimate_items has no
+  // handlers yet (ADR-013 decision 7), so stage money stays 0 for now.
+  const plannerUsableCount = draft.items.filter(
+    it => it.title.trim() !== "",
+  ).length
+
+  const createPlannerTasks = () => {
+    setPlannerConfirmOpen(false)
+    const tasks = tasksFromEstimateItems(draft.items)
+    if (tasks.length === 0) return
+    const replaced = (estimateTasks.data?.length ?? 0) > 0
+    replaceTasks.mutate(
+      { estimateId: draft.id, tasks },
+      {
+        onSuccess: () => {
+          setPlannerResult({ created: tasks.length, replaced })
+        },
+      },
+    )
+  }
+
+  const handleCreatePlanner = () => {
+    if (plannerUsableCount === 0) return
+    // The collection PUT replaces the whole list: over a non-empty list it
+    // would destroy marked-off work (D6), so ask first.
+    if ((estimateTasks.data?.length ?? 0) > 0) {
+      setPlannerConfirmOpen(true)
+      return
+    }
+    createPlannerTasks()
+  }
+
   const editItem = editItemId
     ? (draft.items.find(it => it.id === editItemId) ?? null)
     : null
@@ -336,6 +389,43 @@ export const EstimateEditorView: FC<Props> = ({
           }}
         />
       </div>
+
+      {mode === "edit" && (
+        <div className="mt-3">
+          <button
+            type="button"
+            className="btn btn-outline-primary fw-semibold"
+            onClick={handleCreatePlanner}
+            disabled={plannerUsableCount === 0 || replaceTasks.isPending}
+            title={
+              plannerUsableCount === 0
+                ? "Добавьте позиции в смету, чтобы создать этапы"
+                : undefined
+            }
+          >
+            <i className="bi bi-list-check me-1" />
+            {replaceTasks.isPending ? "Создание..." : "Создать планировщик"}
+          </button>
+          <span className="text-muted small ms-2">
+            Создаст этапы из позиций сметы — по одному этапу на позицию.
+          </span>
+          {plannerResult && (
+            <div className="alert alert-success mt-3 mb-0" role="alert">
+              Создано этапов: {plannerResult.created}
+              {plannerResult.replaced
+                ? ". Существующие этапы заменены."
+                : ". Откройте вкладку «Планировщик», чтобы вести их."}
+            </div>
+          )}
+          {replaceTasks.error && (
+            <div className="alert alert-danger mt-2 mb-0" role="alert">
+              {replaceTasks.error instanceof ApiError
+                ? replaceTasks.error.message
+                : "Не удалось создать этапы"}
+            </div>
+          )}
+        </div>
+      )}
 
       {catalogOpen && (
         <SelectCatalogItemsModal
@@ -402,6 +492,25 @@ export const EstimateEditorView: FC<Props> = ({
             setConflict(null)
             overwriteRef.current = true
             void handleSave()
+          }}
+        />
+      )}
+
+      {plannerConfirmOpen && (
+        <ConfirmDeleteModal
+          title="Заменить этапы?"
+          message={
+            <>
+              У этой сметы уже есть этапы. Создание планировщика из сметы{" "}
+              <strong>заменит</strong> существующий список — статусы и отметки
+              прогресса будут потеряны. Заменить?
+            </>
+          }
+          confirmLabel="Заменить"
+          isPending={replaceTasks.isPending}
+          onConfirm={createPlannerTasks}
+          onClose={() => {
+            setPlannerConfirmOpen(false)
           }}
         />
       )}

@@ -17,10 +17,12 @@ import { ModalShell } from "./ModalShell"
 const runeLength = (s: string): number => Array.from(s).length
 
 type Props = {
-  projectId: string
+  /** The estimate (phase) the task belongs to — required in the PUT body
+   *  since ADR-013 decision 5 re-parented tasks onto estimates. */
+  estimateId: string
   /** null → create mode (PUT with a fresh UUIDv7 id); a task → edit mode (PATCH with only the changed fields). */
   task: Task | null
-  /** assignee names already seen on this project — the autocomplete datalist (§4.4). */
+  /** assignee names already seen on this estimate — the autocomplete datalist (§4.4). */
   knownAssignees: string[]
   /** position for a NEW task — the current list length (append). */
   nextPosition: number
@@ -33,7 +35,7 @@ type Props = {
 // edit mode PATCHes only the changed fields. The status×progress pair is
 // never touched here — it lives on the row controls.
 export const EditTaskModal: FC<Props> = ({
-  projectId,
+  estimateId,
   task,
   knownAssignees,
   nextPosition,
@@ -54,7 +56,7 @@ export const EditTaskModal: FC<Props> = ({
     assignee?: string
   }>({})
 
-  // Unique non-empty names already used on this project, for the datalist
+  // Unique non-empty names already used on this estimate, for the datalist
   // (§4.4: autocomplete from already loaded tasks — zero server cost, no
   // worker directory, no PII storage).
   const assigneeOptions = useMemo(
@@ -91,14 +93,14 @@ export const EditTaskModal: FC<Props> = ({
         return
       }
       patchTask.mutate(
-        { projectId, id: task.id, patch },
+        { estimateId, id: task.id, patch },
         { onSuccess: onClose },
       )
       return
     }
 
     const input: TaskInput = {
-      projectId,
+      estimateId,
       title,
       description,
       status: "todo",
@@ -108,7 +110,7 @@ export const EditTaskModal: FC<Props> = ({
       deadline,
     }
     putTask.mutate(
-      { projectId, id: uuidv7(), data: input },
+      { estimateId, id: uuidv7(), data: input },
       { onSuccess: onClose },
     )
   }
@@ -200,8 +202,8 @@ export const EditTaskModal: FC<Props> = ({
             )}
             {task && (
               <div className="form-text">
-                Статус: {TASK_STATUS_LABELS[task.status]}. Процент и отметку
-                выполнения ставьте в списке задач.
+                Статус: {TASK_STATUS_LABELS[task.status]}. Процент и отправку на
+                проверку ставьте в списке задач.
               </div>
             )}
           </div>

@@ -6,7 +6,7 @@ import { TaskListTable } from "./TaskListTable"
 
 const makeTask = (overrides: Partial<Task> = {}): Task => ({
   id: "0198f2c1-8000-7abc-9000-000000000040",
-  projectId: "0198f2c1-8000-7abc-9000-000000000001",
+  estimateId: "0198f2c1-8000-7abc-9000-000000000001",
   title: "Демонтаж",
   description: "",
   status: "todo",
@@ -90,18 +90,35 @@ describe("TaskListTable", () => {
     expect(pct).toHaveValue("0")
   })
 
-  it("marks a task done through the checkbox", () => {
+  it("sends a task to review through the checkbox", () => {
     const onToggleDone = vi.fn()
     renderTable({ onToggleDone })
 
-    const done = screen.getAllByLabelText("Отметить: Демонтаж")[0]
-    expect(done).not.toBeChecked()
-    fireEvent.click(done)
+    const review = screen.getAllByLabelText("Отправить на проверку")[0]
+    expect(review).not.toHaveClass("btn-primary")
+    fireEvent.click(review)
 
     expect(onToggleDone).toHaveBeenCalledTimes(1)
     expect(onToggleDone).toHaveBeenCalledWith(
       "0198f2c1-8000-7abc-9000-000000000040",
       true,
+    )
+  })
+
+  it("pulls a task back from review through the checkbox", () => {
+    const onToggleDone = vi.fn()
+    renderTable({
+      onToggleDone,
+      tasks: [makeTask({ status: "review", progressPct: 100 })],
+    })
+
+    const review = screen.getAllByLabelText("Вернуть в работу")[0]
+    fireEvent.click(review)
+
+    expect(onToggleDone).toHaveBeenCalledTimes(1)
+    expect(onToggleDone).toHaveBeenCalledWith(
+      "0198f2c1-8000-7abc-9000-000000000040",
+      false,
     )
   })
 

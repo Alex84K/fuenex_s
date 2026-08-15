@@ -9,53 +9,53 @@ export const TASKS_QUERY_KEY = ["tasks"]
 // every task mutation invalidates the list.
 const PROJECTS_QUERY_KEY = ["projects"]
 
-const byProjectKey = (projectId: string) => [
+const byEstimateKey = (estimateId: string) => [
   ...TASKS_QUERY_KEY,
-  "byProject",
-  projectId,
+  "byEstimate",
+  estimateId,
 ]
 
 const readList = (
   queryClient: ReturnType<typeof useQueryClient>,
-  projectId: string,
-): Task[] => queryClient.getQueryData<Task[]>(byProjectKey(projectId)) ?? []
+  estimateId: string,
+): Task[] => queryClient.getQueryData<Task[]>(byEstimateKey(estimateId)) ?? []
 
 const setList = (
   queryClient: ReturnType<typeof useQueryClient>,
-  projectId: string,
+  estimateId: string,
   tasks: Task[],
 ) => {
-  queryClient.setQueryData<Task[]>(byProjectKey(projectId), tasks)
+  queryClient.setQueryData<Task[]>(byEstimateKey(estimateId), tasks)
 }
 
 const touchProjects = (queryClient: ReturnType<typeof useQueryClient>) => {
   void queryClient.invalidateQueries({ queryKey: PROJECTS_QUERY_KEY })
 }
 
-export const useGetTasksByProject = (projectId: string | undefined) =>
+export const useGetTasksByEstimate = (estimateId: string | undefined) =>
   useQuery({
-    queryKey: byProjectKey(projectId ?? ""),
+    queryKey: byEstimateKey(estimateId ?? ""),
     queryFn: () => {
-      if (projectId == null)
-        return Promise.reject(new Error("project id is required"))
-      return tasksApi.listByProject(projectId)
+      if (estimateId == null)
+        return Promise.reject(new Error("estimate id is required"))
+      return tasksApi.listByEstimate(estimateId)
     },
-    enabled: projectId != null,
+    enabled: estimateId != null,
   })
 
 export const usePutTask = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (args: { projectId: string; id: string; data: TaskInput }) =>
+    mutationFn: (args: { estimateId: string; id: string; data: TaskInput }) =>
       tasksApi.put(args.id, args.data),
-    onSuccess: (saved, { projectId }) => {
+    onSuccess: (saved, { estimateId }) => {
       // Create (201) appends, replace (200) swaps in place — both are
       // "this id now holds this task", so one upsert covers both.
-      const list = readList(queryClient, projectId)
+      const list = readList(queryClient, estimateId)
       const exists = list.some(t => t.id === saved.id)
       setList(
         queryClient,
-        projectId,
+        estimateId,
         exists
           ? list.map(t => (t.id === saved.id ? saved : t))
           : [...list, saved],
@@ -68,13 +68,13 @@ export const usePutTask = () => {
 export const usePatchTask = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (args: { projectId: string; id: string; patch: TaskPatch }) =>
+    mutationFn: (args: { estimateId: string; id: string; patch: TaskPatch }) =>
       tasksApi.patch(args.id, args.patch),
-    onSuccess: (saved, { projectId }) => {
+    onSuccess: (saved, { estimateId }) => {
       setList(
         queryClient,
-        projectId,
-        readList(queryClient, projectId).map(t =>
+        estimateId,
+        readList(queryClient, estimateId).map(t =>
           t.id === saved.id ? saved : t,
         ),
       )
@@ -86,13 +86,13 @@ export const usePatchTask = () => {
 export const useDeleteTask = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (args: { projectId: string; id: string }) =>
+    mutationFn: (args: { estimateId: string; id: string }) =>
       tasksApi.remove(args.id),
-    onSuccess: (_data, { projectId, id }) => {
+    onSuccess: (_data, { estimateId, id }) => {
       setList(
         queryClient,
-        projectId,
-        readList(queryClient, projectId).filter(t => t.id !== id),
+        estimateId,
+        readList(queryClient, estimateId).filter(t => t.id !== id),
       )
       touchProjects(queryClient)
     },
@@ -102,13 +102,13 @@ export const useDeleteTask = () => {
 // The collection PUT — used where replacing the whole list IS the user's
 // intent (D6: applying a template appends; reordering). The response is the
 // authoritative post-write list.
-export const useReplaceTasksByProject = () => {
+export const useReplaceTasksByEstimate = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (args: { projectId: string; tasks: TaskRequest[] }) =>
-      tasksApi.replaceByProject(args.projectId, args.tasks),
-    onSuccess: (saved, { projectId }) => {
-      setList(queryClient, projectId, saved)
+    mutationFn: (args: { estimateId: string; tasks: TaskRequest[] }) =>
+      tasksApi.replaceByEstimate(args.estimateId, args.tasks),
+    onSuccess: (saved, { estimateId }) => {
+      setList(queryClient, estimateId, saved)
       touchProjects(queryClient)
     },
   })

@@ -138,7 +138,14 @@ export const ProjectDetailPage: FC = () => {
       <div className="tab-content py-4">
         {activeTab === "info" && <InfoTab project={project} />}
         {activeTab === "measurement" && <MeasurementTab project={project} />}
-        {activeTab === "planner" && <PlannerTab project={project} />}
+        {activeTab === "planner" && (
+          <PlannerTab
+            projectId={project.id}
+            onGoToEstimates={() => {
+              setActiveTab("estimate")
+            }}
+          />
+        )}
         {activeTab === "estimate" && <EstimatesTab project={project} />}
       </div>
 

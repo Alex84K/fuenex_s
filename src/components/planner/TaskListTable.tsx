@@ -164,43 +164,46 @@ export const TaskListTable: FC<Props> = ({
     </div>
   )
 
-  const actionButtons = (task: Task) => (
-    <div className="d-inline-flex gap-1">
-      <button
-        type="button"
-        className={`btn btn-sm ${task.status === "done" ? "btn-primary" : "btn-outline-secondary"}`}
-        title={task.status === "done" ? "Отметить как не выполненное" : "Отметить как выполненное"}
-        aria-label={task.status === "done" ? "Отметить как не выполненное" : "Отметить как выполненное"}
-        onClick={() => {
-          onToggleDone(task.id, task.status !== "done")
-        }}
-      >
-        <i className={`bi ${task.status === "done" ? "bi-check-lg" : "bi-check"}`} />
-      </button>
-      <button
-        type="button"
-        className="btn btn-sm btn-outline-secondary"
-        title="Редактировать"
-        aria-label="Редактировать"
-        onClick={() => {
-          onEdit(task)
-        }}
-      >
-        <i className="bi bi-pencil" />
-      </button>
-      <button
-        type="button"
-        className="btn btn-sm btn-outline-danger"
-        title="Удалить"
-        aria-label="Удалить"
-        onClick={() => {
-          handleDelete(task)
-        }}
-      >
-        <i className="bi bi-trash" />
-      </button>
-    </div>
-  )
+  const actionButtons = (task: Task) => {
+    const isReview = task.status === "review"
+    return (
+      <div className="d-inline-flex gap-1">
+        <button
+          type="button"
+          className={`btn btn-sm ${isReview ? "btn-primary" : "btn-outline-secondary"}`}
+          title={isReview ? "Вернуть в работу" : "Отправить на проверку"}
+          aria-label={isReview ? "Вернуть в работу" : "Отправить на проверку"}
+          onClick={() => {
+            onToggleDone(task.id, !isReview)
+          }}
+        >
+          <i className={`bi ${isReview ? "bi-check-lg" : "bi-check"}`} />
+        </button>
+        <button
+          type="button"
+          className="btn btn-sm btn-outline-secondary"
+          title="Редактировать"
+          aria-label="Редактировать"
+          onClick={() => {
+            onEdit(task)
+          }}
+        >
+          <i className="bi bi-pencil" />
+        </button>
+        <button
+          type="button"
+          className="btn btn-sm btn-outline-danger"
+          title="Удалить"
+          aria-label="Удалить"
+          onClick={() => {
+            handleDelete(task)
+          }}
+        >
+          <i className="bi bi-trash" />
+        </button>
+      </div>
+    )
+  }
 
   const emptyRow = (colSpan: number) => (
     <tr>
@@ -377,7 +380,10 @@ export const TaskListTable: FC<Props> = ({
             visibleTasks.map(task => {
               const index = tasks.indexOf(task)
               return (
-                <div className={`card shadow-sm ${task.status === "done" ? "card-done" : ""}`} key={task.id}>
+                <div
+                  className={`card shadow-sm ${task.status === "done" ? "card-done" : ""}`}
+                  key={task.id}
+                >
                   <div className="card-body p-3">
                     <div className="d-flex justify-content-between align-items-start gap-2 mb-2">
                       <div style={{ minWidth: 0 }}>
@@ -393,9 +399,7 @@ export const TaskListTable: FC<Props> = ({
                         )}
                       </div>
                       <div className="d-inline-flex flex-column flex-shrink-0 gap-2">
-                        <div className="d-flex gap-1">
-                          {moveButtons(index)}
-                        </div>
+                        <div className="d-flex gap-1">{moveButtons(index)}</div>
                         <div className="d-flex gap-1 justify-content-end">
                           {actionButtons(task)}
                         </div>

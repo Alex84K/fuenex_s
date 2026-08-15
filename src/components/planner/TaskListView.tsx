@@ -5,9 +5,9 @@ import { ApiError } from "../../utils/api"
 import {
   TASKS_QUERY_KEY,
   useDeleteTask,
-  useGetTasksByProject,
+  useGetTasksByEstimate,
   usePatchTask,
-  useReplaceTasksByProject,
+  useReplaceTasksByEstimate,
 } from "../../features/planner/tasks.hooks"
 import { buildTaskListBody } from "../../features/planner/utils/buildTaskListBody"
 import { taskFromCatalogItem } from "../../features/planner/utils/fromTaskCatalog"
@@ -30,27 +30,31 @@ import { SaveTaskListAsTemplateModal } from "../modals/SaveTaskListAsTemplateMod
 import { SelectTaskCatalogItemsModal } from "../modals/SelectTaskCatalogItemsModal"
 
 type Props = {
-  projectId: string
+  /** The estimate (phase) whose task list this is — tasks hang off the
+   *  estimate since ADR-013 decision 5. */
+  estimateId: string
   onGoToCatalog: () => void
 }
 
-// The project's task list. No draft, no save button: every change commits
-// individually (decision D2, DESIGN_PLANNER.md §7.1) — marking one task done
-// is a single small PATCH, the product's most frequent operation. Whole-list
-// operations (reorder, apply template, insert from catalog) go through ONE
-// collection PUT — the "replace the list" case where that PUT is the user's
-// intent (D6, §5.2).
-export const TaskListView: FC<Props> = ({ projectId, onGoToCatalog }) => {
+// The estimate's task list — the planner of an estimate is the set of tasks
+// carrying its id (ADR-013 decision 5; D1 of DESIGN_PLANNER: no list table,
+// the estimate IS the list's identity). No draft, no save button: every
+// change commits individually (decision D2, DESIGN_PLANNER.md §7.1) —
+// marking one stage done is a single small PATCH, the product's most frequent
+// operation. Whole-list operations (reorder, apply template, insert from
+// catalog) go through ONE collection PUT — the "replace the list" case where
+// that PUT is the user's intent (D6, §5.2).
+export const TaskListView: FC<Props> = ({ estimateId, onGoToCatalog }) => {
   const queryClient = useQueryClient()
   const {
     data: tasks = [],
     isLoading,
     isError,
     error,
-  } = useGetTasksByProject(projectId)
+  } = useGetTasksByEstimate(estimateId)
   const patchTask = usePatchTask()
   const deleteTask = useDeleteTask()
-  const replaceTasks = useReplaceTasksByProject()
+  const replaceTasks = useReplaceTasksByEstimate()
 
   const [editTarget, setEditTarget] = useState<Task | "new" | null>(null)
   const [catalogOpen, setCatalogOpen] = useState(false)
@@ -81,8 +85,8 @@ export const TaskListView: FC<Props> = ({ projectId, onGoToCatalog }) => {
   const currentList = (): Task[] =>
     queryClient.getQueryData<Task[]>([
       ...TASKS_QUERY_KEY,
-      "byProject",
-      projectId,
+      "byEstimate",
+      estimateId,
     ]) ?? tasks
 
   const readTask = (id: string): Task | undefined =>
@@ -97,7 +101,7 @@ export const TaskListView: FC<Props> = ({ projectId, onGoToCatalog }) => {
     if (!task) return
     const patch = toggleDonePatch(task, done)
     if (!patch) return
-    patchTask.mutate({ projectId, id, patch }, { onSettled: bumpReset })
+    patchTask.mutate({ estimateId, id, patch }, { onSettled: bumpReset })
   }
 
   const handleSetStatus = (id: string, status: TaskStatus) => {
@@ -105,7 +109,7 @@ export const TaskListView: FC<Props> = ({ projectId, onGoToCatalog }) => {
     if (!task) return
     const patch = statusPatch(task, status)
     if (!patch) return
-    patchTask.mutate({ projectId, id, patch }, { onSettled: bumpReset })
+    patchTask.mutate({ estimateId, id, patch }, { onSettled: bumpReset })
   }
 
   const handleSetProgress = (id: string, pct: number) => {
@@ -113,7 +117,7 @@ export const TaskListView: FC<Props> = ({ projectId, onGoToCatalog }) => {
     if (!task) return
     const patch = progressPatch(task, pct)
     if (!patch) return
-    patchTask.mutate({ projectId, id, patch }, { onSettled: bumpReset })
+    patchTask.mutate({ estimateId, id, patch }, { onSettled: bumpReset })
   }
 
   const handleMove = (from: number, to: number) => {
@@ -129,13 +133,13 @@ export const TaskListView: FC<Props> = ({ projectId, onGoToCatalog }) => {
     const [moved] = list.splice(from, 1)
     list.splice(to, 0, moved)
     replaceTasks.mutate(
-      { projectId, tasks: buildTaskListBody(list) },
+      { estimateId, tasks: buildTaskListBody(list) },
       { onSettled: bumpReset },
     )
   }
 
   const handleRemove = (task: Task) => {
-    deleteTask.mutate({ projectId, id: task.id }, { onSettled: bumpReset })
+    deleteTask.mutate({ estimateId, id: task.id }, { onSettled: bumpReset })
   }
 
   // "Из каталога": append the selected rows as fresh tasks — one collection
@@ -144,7 +148,7 @@ export const TaskListView: FC<Props> = ({ projectId, onGoToCatalog }) => {
     const list = currentList()
     const added = rows.map((c, i) => taskFromCatalogItem(c, list.length + i))
     replaceTasks.mutate(
-      { projectId, tasks: [...buildTaskListBody(list), ...added] },
+      { estimateId, tasks: [...buildTaskListBody(list), ...added] },
       { onSettled: bumpReset },
     )
     setCatalogOpen(false)
@@ -157,21 +161,27 @@ export const TaskListView: FC<Props> = ({ projectId, onGoToCatalog }) => {
     const list = currentList()
     const added = tasksFromTemplate(template.items, list.length)
     replaceTasks.mutate(
-      { projectId, tasks: [...buildTaskListBody(list), ...added] },
+      { estimateId, tasks: [...buildTaskListBody(list), ...added] },
       { onSettled: bumpReset },
     )
     setApplyTemplateOpen(false)
   }
 
-  const doneCount = tasks.filter(t => t.status === "done").length
+  // Finished work = review (sent to the customer) or done (accepted). The
+  // foreman's own progress advances the moment a stage leaves his hands; the
+  // acceptance-only count is the customer's view (server taskDoneCount uses
+  // the same review+done rule since ADR-013).
+  const finishedCount = tasks.filter(
+    t => t.status === "review" || t.status === "done",
+  ).length
 
   return (
     <div>
       <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-        <h5 className="fw-bold mb-0">Задачи проекта</h5>
+        <h5 className="fw-bold mb-0">Этапы работ</h5>
         {tasks.length > 0 && (
           <span className="text-muted small">
-            Выполнено {doneCount} из {tasks.length}
+            Готово {finishedCount} из {tasks.length}
           </span>
         )}
       </div>
@@ -225,24 +235,24 @@ export const TaskListView: FC<Props> = ({ projectId, onGoToCatalog }) => {
             <>
               <div className="d-flex justify-content-between align-items-center small text-muted mb-1">
                 <span>
-                  Выполнено {doneCount} из {tasks.length}
+                  Готово {finishedCount} из {tasks.length}
                 </span>
                 <span className="font-monospace">
-                  {Math.round((doneCount / tasks.length) * 100)} %
+                  {Math.round((finishedCount / tasks.length) * 100)} %
                 </span>
               </div>
               <div
                 className="progress"
                 role="progressbar"
                 aria-label="Готовность списка"
-                aria-valuenow={Math.round((doneCount / tasks.length) * 100)}
+                aria-valuenow={Math.round((finishedCount / tasks.length) * 100)}
                 aria-valuemin={0}
                 aria-valuemax={100}
               >
                 <div
                   className="progress-bar bg-success"
                   style={{
-                    width: `${String(Math.round((doneCount / tasks.length) * 100))}%`,
+                    width: `${String(Math.round((finishedCount / tasks.length) * 100))}%`,
                   }}
                 />
               </div>
@@ -280,7 +290,7 @@ export const TaskListView: FC<Props> = ({ projectId, onGoToCatalog }) => {
 
       {editTarget !== null && (
         <EditTaskModal
-          projectId={projectId}
+          estimateId={estimateId}
           task={editTarget === "new" ? null : editTarget}
           knownAssignees={tasks.map(t => t.assignee)}
           nextPosition={tasks.length}

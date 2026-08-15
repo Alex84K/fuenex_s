@@ -8,7 +8,7 @@ import { buildTaskListBody } from "./buildTaskListBody"
 
 const makeTask = (overrides: Partial<Task> = {}): Task => ({
   id: "0198f2c1-8000-7abc-9000-000000000010",
-  projectId: "0198f2c1-8000-7abc-9000-000000000001",
+  estimateId: "0198f2c1-8000-7abc-9000-000000000001",
   title: "Демонтаж",
   description: "",
   status: "todo",
@@ -22,7 +22,7 @@ const makeTask = (overrides: Partial<Task> = {}): Task => ({
 })
 
 describe("buildTaskListBody", () => {
-  it("normalizes positions to 0..n−1 and drops projectId", () => {
+  it("normalizes positions to 0..n−1 and leaves the parent out", () => {
     const body = buildTaskListBody([
       makeTask(),
       makeTask({

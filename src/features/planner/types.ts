@@ -15,20 +15,24 @@ export const TASK_LIMITS = {
 } as const
 
 // Status is deliberately NOT a DB CHECK (decision D4) — the set is a product
-// decision that will change (kanban wants a fourth column). The client uses
-// the same three values the handler accepts today.
-export const TASK_STATUSES = ["todo", "in_progress", "done"] as const
+// decision that will change (kanban wants a fourth column; ADR-013 delivered
+// it). review — "на проверке" — sits between the crew finishing and the
+// customer accepting, so done now means the customer's acceptance, not the
+// foreman's claim. The client mirrors the handler's accepted set.
+export const TASK_STATUSES = ["todo", "in_progress", "review", "done"] as const
 export type TaskStatus = (typeof TASK_STATUSES)[number]
 
 export const TASK_STATUS_LABELS: Record<TaskStatus, string> = {
   todo: "К выполнению",
   in_progress: "В работе",
-  done: "Готово",
+  review: "На проверке",
+  done: "Принято",
 }
 
 export const TASK_STATUS_BADGE: Record<TaskStatus, string> = {
   todo: "text-bg-secondary",
   in_progress: "text-bg-primary",
+  review: "text-bg-info",
   done: "text-bg-success",
 }
 
@@ -63,10 +67,10 @@ export const DEADLINE_URGENCY_BADGE: Record<DeadlineUrgency, string> = {
   none: "",
 }
 
-// GET /api/v1/projects/{id}/tasks · GET/PUT/PATCH /api/v1/tasks/{id} —
+// GET /api/v1/estimates/{id}/tasks · GET/PUT/PATCH /api/v1/tasks/{id} —
 // response. ownerId, deletedAt, rev and schemaVersion never leave the server.
 // Unlike estimateItemDTO, createdAt IS on the wire: a task is the planner's
-// node, and its "time" is when it landed on the object (R6, F-2).
+// node, and its "time" is when it landed on the phase (R6, F-2).
 //
 // deadline is "" when unset — never null (RECARCH_DEADLINE.md §12.1): the
 // same "empty string, not the absence of the key" convention as assignee,
@@ -75,7 +79,10 @@ export const DEADLINE_URGENCY_BADGE: Record<DeadlineUrgency, string> = {
 // browser, not the server (§12.2/§12.3).
 export type Task = {
   id: string
-  projectId: string
+  // Tasks hang off the estimate, not the project (ADR-013 decision 5: a
+  // second estimate on a job is a later phase, and the phase carries its own
+  // work).
+  estimateId: string
   title: string
   description: string
   status: TaskStatus
@@ -87,10 +94,10 @@ export type Task = {
   updatedAt: string
 }
 
-// PUT /api/v1/tasks/{id} — single-task body. projectId is REQUIRED here:
+// PUT /api/v1/tasks/{id} — single-task body. estimateId is REQUIRED here:
 // the path carries only the task id (D2, DESIGN_PLANNER.md §7.3).
 export type TaskInput = {
-  projectId: string
+  estimateId: string
   title: string
   description: string
   status: TaskStatus
@@ -100,9 +107,9 @@ export type TaskInput = {
   deadline: string
 }
 
-// One element of the collection PUT /api/v1/projects/{id}/tasks body — a
+// One element of the collection PUT /api/v1/estimates/{id}/tasks body — a
 // BARE ARRAY, not an object wrapper (D3): [] means [] and nothing else.
-// projectId is absent on purpose — the parent comes from the path; id IS
+// estimateId is absent on purpose — the parent comes from the path; id IS
 // required, the client mints each one (UUIDv7).
 export type TaskRequest = {
   id: string
