@@ -1,8 +1,10 @@
 :root {
-  --primary-color: #001c66;
-  --primary-hover: #00144d;
-  --accent-color: #2563eb;
-  --bg-light: #f8fafc;
+  /* Бренд Stroylit — палитра «Кирпично-красный» из дизайн-системы
+     (Stroylit-design/tokens/tokens.css, DESIGN_REDESIGN.md). */
+  --primary-color: #A8412E;   /* accent — кирпичный */
+  --primary-hover: #8C3222;   /* accent-dark */
+  --accent-color: #A8412E;
+  --bg-light: #FAF7F4;        /* фон дизайн-системы */
 }
 
 html {
@@ -21,7 +23,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #1e293b;
+  color: #241f19;
 }
 
 /* Brand logo */
@@ -66,7 +68,7 @@ body {
 .btn-custom-primary:focus {
   background-color: var(--primary-hover);
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 28, 106, 0.25);
+  box-shadow: 0 4px 12px rgba(168, 65, 46, 0.25);
 }
 
 .btn-custom-outline {
@@ -187,8 +189,8 @@ body {
 /* ── Layout ───────────────────────────────────────────────────── */
 .landing-page {
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  color: #1e293b;
-  background: #ffffff;
+  color: #241f19;
+  background: #faf7f4;
   overflow-x: hidden;
 }
 
@@ -220,7 +222,7 @@ body {
   font-size: 0.58rem;
   letter-spacing: 0.6px;
   text-transform: uppercase;
-  color: #64748b;
+  color: #6b655c;
   font-weight: 600;
 }
 
@@ -234,11 +236,8 @@ body {
   transition: background 0.3s ease, box-shadow 0.3s ease;
   background: rgba(255, 255, 255, 0.97);
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 2px 20px rgba(0, 28, 102, 0.06);
-}
-
-.landing-nav--scrolled {
+  border-bottom: 1px solid #e3dcd3;
+  box-shadow: 0 2px 20px rgba(43, 33, 27, 0.06);
 }
 
 .landing-nav__inner {
@@ -262,7 +261,7 @@ body {
   padding: 8px 14px;
   font-size: 0.9rem;
   font-weight: 500;
-  color: #475569;
+  color: #6b655c;
   text-decoration: none;
   border-radius: 8px;
   transition: color 0.2s ease, background 0.2s ease;
@@ -270,7 +269,7 @@ body {
 
 .landing-nav__link:hover {
   color: var(--primary-color);
-  background: rgba(0, 28, 102, 0.05);
+  background: rgba(168, 65, 46, 0.08);
 }
 
 .landing-nav__actions {
@@ -318,7 +317,7 @@ body {
 .landing-mobile-menu {
   background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(16px);
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid #e3dcd3;
   padding: 16px 0 24px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
 }
@@ -327,10 +326,10 @@ body {
   display: block;
   padding: 12px 0;
   font-weight: 500;
-  color: #334155;
+  color: #241f19;
   text-decoration: none;
   font-size: 1rem;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid #f2ede8;
   transition: color 0.2s ease;
 }
 
@@ -340,7 +339,7 @@ body {
 
 .landing-mobile-menu__divider {
   border: none;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid #e3dcd3;
   margin: 8px 0;
 }
 
@@ -354,7 +353,7 @@ body {
   font-weight: 600;
   font-size: 0.92rem;
   padding: 10px 22px;
-  border-radius: 10px;
+  border-radius: 22px;
   border: 2px solid var(--primary-color);
   cursor: pointer;
   text-decoration: none;
@@ -367,7 +366,7 @@ body {
   background: var(--primary-hover);
   border-color: var(--primary-hover);
   color: #fff;
-  box-shadow: 0 6px 18px rgba(0, 28, 102, 0.28);
+  box-shadow: 0 6px 18px rgba(168, 65, 46, 0.3);
   transform: translateY(-1px);
 }
 
@@ -380,8 +379,8 @@ body {
   font-weight: 600;
   font-size: 0.92rem;
   padding: 10px 22px;
-  border-radius: 10px;
-  border: 2px solid var(--primary-color);
+  border-radius: 22px;
+  border: 1.5px solid var(--primary-color);
   cursor: pointer;
   text-decoration: none;
   transition: all 0.2s ease;
@@ -403,7 +402,7 @@ body {
   font-weight: 700;
   font-size: 1rem;
   padding: 14px 32px;
-  border-radius: 12px;
+  border-radius: 22px;
   border: 2px solid #ffffff;
   cursor: pointer;
   text-decoration: none;
@@ -413,8 +412,8 @@ body {
 }
 
 .landing-btn-white:hover {
-  background: #f0f4ff;
-  border-color: #f0f4ff;
+  background: #f5e0da;
+  border-color: #f5e0da;
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
@@ -428,7 +427,7 @@ body {
   font-weight: 600;
   font-size: 1rem;
   padding: 14px 32px;
-  border-radius: 12px;
+  border-radius: 22px;
   border: 2px solid rgba(255, 255, 255, 0.6);
   cursor: pointer;
   text-decoration: none;
@@ -446,7 +445,7 @@ body {
 .landing-btn-lg {
   font-size: 1rem;
   padding: 14px 32px;
-  border-radius: 12px;
+  border-radius: 22px;
 }
 
 .landing-btn-full {
@@ -465,8 +464,8 @@ body {
   font-weight: 700;
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  color: var(--primary-color);
-  background: rgba(0, 28, 102, 0.07);
+  color: #8c3222;
+  background: #f5e0da;
   padding: 5px 14px;
   border-radius: 100px;
   margin-bottom: 14px;
@@ -475,14 +474,14 @@ body {
 .landing-section-title {
   font-size: 2.2rem;
   font-weight: 800;
-  color: var(--primary-color);
+  color: #241f19;
   line-height: 1.2;
   margin: 0 0 16px;
 }
 
 .landing-section-desc {
   font-size: 1.1rem;
-  color: #64748b;
+  color: #6b655c;
   max-width: 600px;
   margin: 0 auto;
   line-height: 1.65;
@@ -491,7 +490,7 @@ body {
 /* ── Hero ───────────────────────────────────────────────────────── */
 .landing-hero {
   position: relative;
-  background: linear-gradient(150deg, #001333 0%, #001c66 45%, #0a2d8f 100%);
+  background: linear-gradient(150deg, #14100d 0%, #2b211b 50%, #3e3128 100%);
   padding-top: 100px;
   overflow: hidden;
 }
@@ -503,7 +502,7 @@ body {
   right: -10%;
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(37, 99, 235, 0.25) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(168, 65, 46, 0.28) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -518,13 +517,13 @@ body {
 
 .landing-hero__badge {
   display: inline-block;
-  background: rgba(255, 255, 255, 0.12);
-  color: rgba(255, 255, 255, 0.9);
+  background: #f5e0da;
+  color: #8c3222;
   font-size: 0.8rem;
   font-weight: 600;
   padding: 6px 16px;
   border-radius: 100px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(168, 65, 46, 0.35);
   margin-bottom: 20px;
 }
 
@@ -573,7 +572,7 @@ body {
 
 .landing-hero__img {
   width: 100%;
-  border-radius: 24px;
+  border-radius: 22px;
   box-shadow: 0 40px 80px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255,255,255,0.08);
   display: block;
 }
@@ -586,7 +585,7 @@ body {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(8px);
   padding: 10px 16px;
-  border-radius: 12px;
+  border-radius: 16px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   white-space: nowrap;
 }
@@ -621,7 +620,7 @@ body {
 
 .landing-hero__img-badge-sub {
   font-size: 0.7rem;
-  color: #64748b;
+  color: #6b655c;
   margin-top: 2px;
 }
 
@@ -640,7 +639,7 @@ body {
 /* ── Process / Steps ────────────────────────────────────────────── */
 .landing-process {
   padding: 96px 0;
-  background: #ffffff;
+  background: #faf7f4;
 }
 
 .landing-steps {
@@ -651,8 +650,8 @@ body {
 
 .landing-step {
   background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 20px;
+  border: 1.5px solid #e3dcd3;
+  border-radius: 16px;
   padding: 32px 24px;
   text-align: center;
   position: relative;
@@ -661,8 +660,8 @@ body {
 
 .landing-step:hover {
   transform: translateY(-6px);
-  box-shadow: 0 16px 40px rgba(0, 28, 102, 0.1);
-  border-color: rgba(0, 28, 102, 0.2);
+  box-shadow: 0 16px 40px rgba(43, 33, 27, 0.12);
+  border-color: rgba(168, 65, 46, 0.35);
 }
 
 .landing-step__num {
@@ -671,7 +670,7 @@ body {
   right: 18px;
   font-size: 2rem;
   font-weight: 900;
-  color: rgba(0, 28, 102, 0.08);
+  color: rgba(168, 65, 46, 0.12);
   line-height: 1;
 }
 
@@ -682,9 +681,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 28, 102, 0.06);
-  border-radius: 18px;
-  color: var(--primary-color);
+  background: #f5e0da;
+  border-radius: 16px;
+  color: #8c3222;
   transition: background 0.25s ease;
 }
 
@@ -695,19 +694,19 @@ body {
 }
 
 .landing-step:hover .landing-step__icon {
-  background: rgba(0, 28, 102, 0.1);
+  background: #f5d9d1;
 }
 
 .landing-step__title {
   font-weight: 700;
   font-size: 1rem;
-  color: var(--primary-color);
+  color: #241f19;
   margin: 0 0 10px;
 }
 
 .landing-step__desc {
   font-size: 0.88rem;
-  color: #64748b;
+  color: #6b655c;
   line-height: 1.6;
   margin: 0;
 }
@@ -715,7 +714,7 @@ body {
 /* ── About ──────────────────────────────────────────────────────── */
 .landing-about {
   padding: 96px 0;
-  background: #f8fafc;
+  background: #f2ede8;
 }
 
 .landing-cards {
@@ -726,16 +725,16 @@ body {
 
 .landing-card {
   background: #ffffff;
-  border-radius: 20px;
+  border-radius: 16px;
   padding: 36px 28px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-  border: 1px solid #e9f0ff;
+  border: 1.5px solid #e3dcd3;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .landing-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 12px 32px rgba(0, 28, 102, 0.1);
+  box-shadow: 0 12px 32px rgba(43, 33, 27, 0.12);
 }
 
 .landing-card__icon {
@@ -746,20 +745,20 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 28, 102, 0.06);
-  border-radius: 14px;
+  background: #f5e0da;
+  border-radius: 16px;
 }
 
 .landing-card__title {
   font-size: 1.05rem;
   font-weight: 700;
-  color: var(--primary-color);
+  color: #241f19;
   margin: 0 0 10px;
 }
 
 .landing-card__desc {
   font-size: 0.9rem;
-  color: #64748b;
+  color: #6b655c;
   line-height: 1.65;
   margin: 0;
 }
@@ -767,7 +766,7 @@ body {
 /* ── CTA ────────────────────────────────────────────────────────── */
 .landing-cta {
   padding: 96px 0;
-  background: linear-gradient(135deg, var(--primary-color) 0%, #0d38a6 100%);
+  background: linear-gradient(135deg, #2b211b 0%, #14100d 100%);
   position: relative;
   overflow: hidden;
 }
@@ -816,7 +815,7 @@ body {
 /* ── FAQ ────────────────────────────────────────────────────────── */
 .landing-faq {
   padding: 96px 0;
-  background: #ffffff;
+  background: #faf7f4;
 }
 
 .landing-faq__list {
@@ -825,7 +824,7 @@ body {
 }
 
 .landing-faq__item {
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e3dcd3;
 }
 
 .landing-faq__question {
@@ -840,7 +839,7 @@ body {
   padding: 22px 0;
   font-size: 1rem;
   font-weight: 600;
-  color: var(--primary-color);
+  color: #241f19;
   text-align: left;
   font-family: inherit;
   transition: color 0.2s ease;
@@ -857,11 +856,11 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 28, 102, 0.07);
-  border-radius: 8px;
+  background: #f5e0da;
+  border-radius: 999px;
   font-size: 1.2rem;
   font-weight: 400;
-  color: var(--primary-color);
+  color: #8c3222;
   transition: background 0.2s ease, color 0.2s ease;
 }
 
@@ -883,13 +882,13 @@ body {
 .landing-faq__answer p {
   margin: 0 0 22px;
   font-size: 0.95rem;
-  color: #64748b;
+  color: #6b655c;
   line-height: 1.7;
 }
 
 /* ── Footer ─────────────────────────────────────────────────────── */
 .landing-footer {
-  background: #0f172a;
+  background: #2b211b;
   padding: 48px 0 36px;
 }
 
@@ -906,7 +905,7 @@ body {
 }
 
 .landing-footer .landing-brand__sub {
-  color: #64748b;
+  color: rgba(255, 255, 255, 0.55);
 }
 
 .landing-footer__links {
@@ -917,7 +916,7 @@ body {
 }
 
 .landing-footer__link {
-  color: #94a3b8;
+  color: rgba(255, 255, 255, 0.65);
   font-size: 0.88rem;
   text-decoration: none;
   transition: color 0.2s ease;
@@ -938,7 +937,7 @@ body {
 
 .landing-footer__copy {
   font-size: 0.8rem;
-  color: #475569;
+  color: rgba(255, 255, 255, 0.45);
   margin: 0;
 }
 
@@ -963,7 +962,7 @@ body {
 
 .landing-modal-content {
   background: #ffffff;
-  border-radius: 20px;
+  border-radius: 22px;
   padding: 36px;
   width: 100%;
   max-width: 480px;
@@ -987,12 +986,12 @@ body {
 .landing-modal-title {
   font-size: 1.4rem;
   font-weight: 800;
-  color: var(--primary-color);
+  color: #241f19;
   margin: 0;
 }
 
 .landing-modal-close {
-  background: #f1f5f9;
+  background: #f2ede8;
   border: none;
   width: 32px;
   height: 32px;
@@ -1002,19 +1001,19 @@ body {
   justify-content: center;
   cursor: pointer;
   font-size: 0.85rem;
-  color: #64748b;
+  color: #6b655c;
   flex-shrink: 0;
   transition: background 0.2s ease, color 0.2s ease;
 }
 
 .landing-modal-close:hover {
-  background: #e2e8f0;
-  color: var(--primary-color);
+  background: #e3dcd3;
+  color: #8c3222;
 }
 
 .landing-modal-desc {
   font-size: 0.9rem;
-  color: #64748b;
+  color: #6b655c;
   margin: 0 0 24px;
 }
 
@@ -1026,7 +1025,7 @@ body {
   display: block;
   font-size: 0.82rem;
   font-weight: 600;
-  color: #374151;
+  color: #241f19;
   margin-bottom: 6px;
 }
 
@@ -1035,17 +1034,17 @@ body {
   padding: 10px 14px;
   font-size: 0.92rem;
   font-family: inherit;
-  border: 1.5px solid #e2e8f0;
+  border: 1.5px solid #e3dcd3;
   border-radius: 10px;
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   box-sizing: border-box;
-  background: #fafafa;
+  background: #ffffff;
 }
 
 .landing-form-input:focus {
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(0, 28, 102, 0.1);
+  box-shadow: 0 0 0 3px rgba(168, 65, 46, 0.15);
   background: #fff;
 }
 
@@ -1068,20 +1067,20 @@ body {
 .landing-privacy-title {
   font-size: 2.5rem;
   font-weight: 800;
-  color: var(--primary-color);
+  color: #241f19;
   margin: 16px 0 8px;
 }
 
 .landing-privacy-meta {
   font-size: 0.85rem;
-  color: #94a3b8;
+  color: #9b948a;
   margin-bottom: 48px;
 }
 
 .landing-privacy-stub {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 20px;
+  background: #ffffff;
+  border: 1.5px solid #e3dcd3;
+  border-radius: 16px;
   padding: 60px 40px;
   text-align: center;
 }
@@ -1094,13 +1093,13 @@ body {
 .landing-privacy-stub__title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--primary-color);
+  color: #241f19;
   margin: 0 0 12px;
 }
 
 .landing-privacy-stub__desc {
   font-size: 0.95rem;
-  color: #64748b;
+  color: #6b655c;
   line-height: 1.65;
   max-width: 420px;
   margin: 0 auto 32px;

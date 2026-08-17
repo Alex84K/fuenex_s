@@ -9,7 +9,7 @@ export const HomePage: FC = () => {
     <div className="container py-5">
       <div className="row justify-content-center text-center">
         <div className="col-lg-8 py-5">
-          <h1 className="display-4 fw-bold mb-3">Fuenex SNG Platform</h1>
+          <h1 className="display-4 fw-bold mb-3">Stroylit — платформа для профессионалов</h1>
           <p className="lead text-muted mb-4">
             Современная платформа для быстрого AR-замера и управления проектами.
           </p>

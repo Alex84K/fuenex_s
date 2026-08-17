@@ -24,7 +24,7 @@ const Shell: FC<{ children: React.ReactNode }> = ({ children }) => (
     <Navbar />
     <main className="flex-grow-1">{children}</main>
     <footer className="py-3 bg-surface text-center text-muted border-top">
-      <small>© {new Date().getFullYear()} Fuenex SNG. All rights reserved.</small>
+      <small>© {new Date().getFullYear()} Stroylit. All rights reserved.</small>
     </footer>
   </div>
 )

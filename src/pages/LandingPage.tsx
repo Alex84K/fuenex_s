@@ -120,15 +120,15 @@ export const LandingPage: FC = () => {
   const faqItems = [
     {
       q: "Готова ли платформа к требованиям электронного документооборота?",
-      a: "Да. FUENEX поддерживает формирование структурированных электронных документов, соответствующих современным регуляторным стандартам. Все документы создаются автоматически, без необходимости в дополнительных внешних системах.",
+      a: "Да. Stroylit поддерживает формирование структурированных электронных документов, соответствующих современным регуляторным стандартам. Все документы создаются автоматически, без необходимости в дополнительных внешних системах.",
     },
     {
       q: "Как работает цифровое 3D-замер помещений в приложении?",
-      a: "На устройствах с поддержкой LiDAR (Apple iPhone 12 Pro и новее) FUENEX использует Apple RoomPlan API. Просто направьте камеру на комнату — стены, окна, двери и ниши будут распознаны и измерены с точностью до сантиметра. Для других устройств доступен ручной режим ввода.",
+      a: "На устройствах с поддержкой LiDAR (Apple iPhone 12 Pro и новее) Stroylit использует Apple RoomPlan API. Просто направьте камеру на комнату — стены, окна, двери и ниши будут распознаны и измерены с точностью до сантиметра. Для других устройств доступен ручной режим ввода.",
     },
     {
       q: "Можно ли задать собственные цены на материалы и услуги?",
-      a: "Да. В профиле компании вы можете создать собственный каталог услуг и прайс-листы на материалы. FUENEX автоматически использует ваши данные при расчёте материалов и формировании коммерческих предложений.",
+      a: "Да. В профиле компании вы можете создать собственный каталог услуг и прайс-листы на материалы. Stroylit автоматически использует ваши данные при расчёте материалов и формировании коммерческих предложений.",
     },
   ]
 
@@ -147,9 +147,9 @@ export const LandingPage: FC = () => {
               scrollTo("home")
             }}
           >
-            <span className="landing-brand__logo">FUENEX</span>
+            <span className="landing-brand__logo">Stroylit</span>
             <span className="landing-brand__sub">
-              Digital Solutions for the Future
+              Платформа для мастеров отделочных работ
             </span>
           </a>
 
@@ -307,7 +307,7 @@ export const LandingPage: FC = () => {
           <div className="landing-hero__text">
             <span className="landing-hero__badge">🚀 Новое поколение инструментов</span>
             <h1 className="landing-hero__title">
-              FUENEX — интуитивная платформа для профессионалов
+              Stroylit — интуитивная платформа для профессионалов
             </h1>
             <p className="landing-hero__subtitle">
               Замер, расчёт материалов и оформление коммерческого предложения —
@@ -323,7 +323,7 @@ export const LandingPage: FC = () => {
               </Link>
               <button
                 id="landing-hero-contact"
-                className="landing-btn-outline landing-btn-lg"
+                className="landing-btn-outline-white landing-btn-lg"
                 onClick={() => { setContactOpen(true); }}
               >
                 Связаться с нами
@@ -338,7 +338,7 @@ export const LandingPage: FC = () => {
             <div className="landing-hero__img-wrapper">
               <img
                 src="/app-screenshot.png"
-                alt="Интерфейс приложения FUENEX — замер помещения и расчёт материалов"
+                alt="Интерфейс приложения Stroylit — замер помещения и расчёт материалов"
                 className="landing-hero__img"
                 loading="eager"
               />
@@ -365,7 +365,7 @@ export const LandingPage: FC = () => {
         </div>
         <div className="landing-hero__wave">
           <svg viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z" fill="#ffffff" />
+            <path d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z" fill="#faf7f4" />
           </svg>
         </div>
       </header>
@@ -443,7 +443,7 @@ export const LandingPage: FC = () => {
             </h2>
             <p className="landing-section-desc">
               Мы верим, что первоклассная работа заслуживает первоклассных
-              инструментов. FUENEX создан, чтобы освободить профессионалов
+              инструментов. Stroylit создан, чтобы освободить профессионалов
               от рутинной бумажной работы.
             </p>
           </div>
@@ -458,7 +458,7 @@ export const LandingPage: FC = () => {
               {
                 icon: "📄",
                 title: "Соответствие стандартам",
-                desc: "Легко выполняйте требования по электронному документообороту. FUENEX автоматически формирует структурированные документы без необходимости в сторонних системах.",
+                desc: "Легко выполняйте требования по электронному документообороту. Stroylit автоматически формирует структурированные документы без необходимости в сторонних системах.",
               },
               {
                 icon: "🔒",
@@ -485,7 +485,7 @@ export const LandingPage: FC = () => {
             </h2>
             <p className="landing-cta__desc">
               Присоединяйтесь к профессионалам, которые уже экономят время
-              и деньги с FUENEX.
+              и деньги со Stroylit.
             </p>
           </div>
           <div className="landing-cta__actions">
@@ -516,7 +516,7 @@ export const LandingPage: FC = () => {
               Часто задаваемые вопросы
             </h2>
             <p className="landing-section-desc">
-              Всё, что вам нужно знать о платформе FUENEX.
+              Всё, что вам нужно знать о платформе Stroylit.
             </p>
           </div>
 
@@ -556,7 +556,7 @@ export const LandingPage: FC = () => {
       <footer className="landing-footer">
         <div className="landing-container landing-footer__inner">
           <div className="landing-footer__brand">
-            <span className="landing-brand__logo">FUENEX</span>
+            <span className="landing-brand__logo">Stroylit</span>
           </div>
           <nav className="landing-footer__links" aria-label="Ссылки футера">
             <a
@@ -580,7 +580,7 @@ export const LandingPage: FC = () => {
             </button>
           </nav>
           <p className="landing-footer__copy">
-            © {new Date().getFullYear()} FUENEX. Все права защищены.
+            © {new Date().getFullYear()} Stroylit. Все права защищены.
           </p>
         </div>
       </footer>

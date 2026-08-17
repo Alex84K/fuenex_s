@@ -37,7 +37,7 @@ export const Navbar: FC = () => {
     >
       <div className="container">
         <Link className="navbar-brand fw-bold text-gradient" to="/" onClick={closeMenu}>
-          ⚡ Fuenex SNG
+          Stroylit
         </Link>
         <button
           className="navbar-toggler"

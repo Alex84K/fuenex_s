@@ -8,9 +8,9 @@ export const PrivacyPage: FC = () => {
       <nav className="landing-nav landing-nav--scrolled">
         <div className="landing-container landing-nav__inner">
           <Link to="/" className="landing-brand">
-            <span className="landing-brand__logo">FUENEX</span>
+            <span className="landing-brand__logo">Stroylit</span>
             <span className="landing-brand__sub">
-              Digital Solutions for the Future
+              Платформа для мастеров отделочных работ
             </span>
           </Link>
           <div className="landing-nav__actions">
@@ -60,13 +60,13 @@ export const PrivacyPage: FC = () => {
       <footer className="landing-footer">
         <div className="landing-container landing-footer__inner">
           <div className="landing-footer__brand">
-            <span className="landing-brand__logo">FUENEX</span>
+            <span className="landing-brand__logo">Stroylit</span>
             <span className="landing-brand__sub">
-              Digital Solutions for the Future
+              Платформа для мастеров отделочных работ
             </span>
           </div>
           <p className="landing-footer__copy">
-            © {new Date().getFullYear()} FUENEX. Все права защищены.
+            © {new Date().getFullYear()} Stroylit. Все права защищены.
           </p>
         </div>
       </footer>
