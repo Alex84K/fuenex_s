@@ -24,6 +24,7 @@ import type { DraftItem } from "./estimateEditorSlice"
 const makeEstimate = (): Estimate => ({
   id: "0198f2c1-8000-7abc-9000-000000000001",
   projectId: "0198f2bf-0000-7000-8000-000000000001",
+  number: 1,
   title: "Смета",
   currency: "RUB",
   taxRateBp: 2000,

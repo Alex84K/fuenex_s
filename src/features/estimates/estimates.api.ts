@@ -1,4 +1,4 @@
-import { apiFetch } from "../../utils/api"
+import { apiFetch, apiFetchBinary } from "../../utils/api"
 import type {
   Estimate,
   EstimateInput,
@@ -12,6 +12,13 @@ export const estimatesApi = {
 
   getById: (id: string): Promise<Estimate> =>
     apiFetch<Estimate>(`/api/v1/estimates/${id}`),
+
+  // The blob's .type is set from the response's Content-Type
+  // (application/pdf, set by the server) — nothing to configure here.
+  pdf: async (id: string): Promise<Blob> => {
+    const response = await apiFetchBinary(`/api/v1/estimates/${id}/pdf`)
+    return response.blob()
+  },
 
   // PUT is both create (201) and replace (200) — the client mints the
   // UUIDv7 id. The body is always built by buildEstimateBody so the items

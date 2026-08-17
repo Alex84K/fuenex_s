@@ -29,11 +29,16 @@ import { estimatesApi } from "../../features/estimates/estimates.api"
 import {
   ESTIMATES_QUERY_KEY,
   useGetEstimate,
+  useOpenEstimatePdf,
   usePatchEstimate,
   usePutEstimate,
 } from "../../features/estimates/estimates.hooks"
 import { buildEstimateBody } from "../../features/estimates/utils/buildEstimateBody"
 import { fromTemplateItems } from "../../features/estimates/utils/fromCatalog"
+import {
+  pdfErrorMessage,
+  showPdfLoadingPlaceholder,
+} from "../../features/estimates/utils/pdfTab"
 import {
   useGetTasksByEstimate,
   useReplaceTasksByEstimate,
@@ -114,6 +119,7 @@ export const EstimateEditorView: FC<Props> = ({
   // button asks first. Only needed in edit mode, where id is set.
   const estimateTasks = useGetTasksByEstimate(id ?? undefined)
   const replaceTasks = useReplaceTasksByEstimate()
+  const openPdf = useOpenEstimatePdf()
 
   // create mode: an empty draft is minted once; leaving resets the editor.
   useEffect(() => {
@@ -236,8 +242,11 @@ export const EstimateEditorView: FC<Props> = ({
     }
   }
 
-  const handleSave = async () => {
-    if (isPending) return
+  // Returns whether the estimate ended up saved — callers that need to
+  // chain on a successful save (e.g. "save, then open the PDF") read this
+  // instead of duplicating the conflict/error handling below.
+  const handleSave = async (): Promise<boolean> => {
+    if (isPending) return false
     setSaveError(null)
     try {
       // D11 guard (edit mode only): a control GET before the write; a
@@ -245,17 +254,19 @@ export const EstimateEditorView: FC<Props> = ({
       if (mode === "edit" && !overwriteRef.current) {
         const state = store.getState()
         const d = state.estimateEditor.draft
-        if (!d) return
+        if (!d) return false
         const base = state.estimateEditor.baseUpdatedAt
         const fresh = await estimatesApi.getById(d.id)
         if (base && fresh.updatedAt !== base) {
           setConflict(fresh)
-          return
+          return false
         }
       }
       await persist(mode === "create")
+      return true
     } catch (err) {
       handleSaveError(err)
+      return false
     } finally {
       overwriteRef.current = false
     }
@@ -325,6 +336,21 @@ export const EstimateEditorView: FC<Props> = ({
     createPlannerTasks()
   }
 
+  // Opens the tab synchronously, before any await, so the browser treats
+  // it as a direct result of the click rather than a blocked popup (see
+  // utils/pdfTab.ts). id is non-null here: the button only renders in edit
+  // mode, where estimateId is always set.
+  const handleViewPdf = () => {
+    if (!id) return
+    const popup = window.open("", "_blank")
+    if (popup) showPdfLoadingPlaceholder(popup)
+    openPdf.mutate({
+      id,
+      popup,
+      ensureSaved: () => (isDirty ? handleSave() : Promise.resolve(true)),
+    })
+  }
+
   const editItem = editItemId
     ? (draft.items.find(it => it.id === editItemId) ?? null)
     : null
@@ -389,6 +415,34 @@ export const EstimateEditorView: FC<Props> = ({
           }}
         />
       </div>
+
+      {mode === "edit" && (
+        <div className="mt-3">
+          <button
+            type="button"
+            className="btn btn-outline-primary fw-semibold"
+            onClick={handleViewPdf}
+            disabled={openPdf.isPending}
+          >
+            <i className="bi bi-file-earmark-pdf me-1" />
+            {openPdf.isPending
+              ? "Формируем…"
+              : isDirty
+                ? "Сохранить и посмотреть PDF"
+                : "Смотреть смету PDF"}
+          </button>
+          {estimate && (
+            <span className="text-muted small ms-2">
+              Смета № {estimate.number}
+            </span>
+          )}
+          {openPdf.error && !conflict && (
+            <div className="alert alert-danger mt-2 mb-0" role="alert">
+              {pdfErrorMessage(openPdf.error)}
+            </div>
+          )}
+        </div>
+      )}
 
       {mode === "edit" && (
         <div className="mt-3">

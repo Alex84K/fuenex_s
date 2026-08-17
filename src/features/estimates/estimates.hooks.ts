@@ -1,6 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { estimatesApi } from "./estimates.api"
 import type { EstimateInput, EstimatePatch } from "./types"
+import {
+  openPdfBlobInTab,
+  PdfPopupBlockedError,
+  PdfSaveFailedError,
+} from "./utils/pdfTab"
 
 export const ESTIMATES_QUERY_KEY = ["estimates"]
 
@@ -59,6 +64,31 @@ export const usePatchEstimate = () => {
     },
   })
 }
+
+// popup is opened synchronously by the caller (before any await — see
+// utils/pdfTab.ts for why) and only navigated here. ensureSaved lets the
+// caller reuse its own save path (with its own conflict/error handling)
+// without this hook knowing anything about the editor's draft state.
+export const useOpenEstimatePdf = () =>
+  useMutation({
+    mutationFn: async (vars: {
+      id: string
+      popup: Window | null
+      ensureSaved: () => Promise<boolean>
+    }) => {
+      if (!vars.popup) {
+        throw new PdfPopupBlockedError()
+      }
+      const saved = await vars.ensureSaved()
+      if (!saved) {
+        if (!vars.popup.closed) vars.popup.close()
+        throw new PdfSaveFailedError()
+      }
+      const blob = await estimatesApi.pdf(vars.id)
+      if (vars.popup.closed) return
+      openPdfBlobInTab(blob, vars.popup)
+    },
+  })
 
 export const useDeleteEstimate = () => {
   const queryClient = useQueryClient()

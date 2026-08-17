@@ -23,6 +23,7 @@ export const ESTIMATE_LIMITS = {
 export type Estimate = {
   id: string
   projectId: string
+  number: number // human-readable, assigned by the server on creation
   title: string
   currency: string // "RUB" | "KZT" | ... — three uppercase letters, no catalog
   taxRateBp: number // basis points: 2000 = 20 %
