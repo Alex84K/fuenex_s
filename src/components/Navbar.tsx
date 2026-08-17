@@ -3,6 +3,7 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useAppDispatch, useAppSelector } from "../app/hooks"
 import { logoutAsync } from "../features/auth/authSlice"
+import { ThemeToggle } from "./ThemeToggle"
 
 // The app loads Bootstrap's CSS only, not its JS bundle — every
 // data-bs-* behavior (toggler, collapse, modal) is therefore driven from
@@ -27,7 +28,13 @@ export const Navbar: FC = () => {
   }
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    // Навбар остаётся тёмным в обеих темах: .bg-dark — это брендовый navy
+    // (#2B211B) из токенов, а не серый Bootstrap. `navbar-dark` в 5.3 устарел в
+    // пользу data-bs-theme, поэтому подсветку содержимого задаём атрибутом.
+    <nav
+      className="navbar navbar-expand-lg bg-dark shadow-sm"
+      data-bs-theme="dark"
+    >
       <div className="container">
         <Link className="navbar-brand fw-bold text-gradient" to="/" onClick={closeMenu}>
           ⚡ Fuenex SNG
@@ -62,6 +69,7 @@ export const Navbar: FC = () => {
             )}
           </ul>
           <div className="d-flex align-items-center gap-3">
+            <ThemeToggle />
             {isAuthenticated ? (
               <>
                 <span className="navbar-text text-light small">

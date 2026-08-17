@@ -4,7 +4,10 @@ import { Provider } from "react-redux"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { App } from "./App"
 import { store } from "./app/store"
-import "bootstrap/dist/css/bootstrap.min.css"
+// Bootstrap собирается из Sass с брендовыми переменными (src/styles/), а не
+// подключается готовым CSS — см. agentic_docs/redesign/DESIGN_REDESIGN.md D1.
+// index.css идёт последним: в нём живёт лендинг со своей палитрой (D13).
+import "./styles/main.scss"
 import "bootstrap-icons/font/bootstrap-icons.css"
 import "./index.css"
 

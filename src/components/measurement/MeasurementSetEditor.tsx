@@ -306,7 +306,7 @@ export const MeasurementSetEditor: FC<Props> = ({
         }}
       />
 
-      <div className="d-flex flex-wrap align-items-center gap-2 mt-3 sticky-bottom bg-white py-2 border-top">
+      <div className="d-flex flex-wrap align-items-center gap-2 mt-3 sticky-bottom bg-surface py-2 border-top">
         <button
           type="button"
           className="btn btn-primary fw-bold"

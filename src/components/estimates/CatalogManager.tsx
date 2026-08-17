@@ -113,7 +113,7 @@ export const CatalogManager: FC = () => {
       <div className="row g-2 mb-3">
         <div className="col-md-6">
           <div className="input-group">
-            <span className="input-group-text bg-white">
+            <span className="input-group-text bg-surface">
               <i className="bi bi-search" />
             </span>
             <input

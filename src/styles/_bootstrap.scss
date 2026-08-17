@@ -1,0 +1,132 @@
+// Брендирование Bootstrap до компиляции.
+//
+// Почему Sass, а не переопределение --bs-* поверх готового CSS: в 5.3 `.btn-primary`
+// жёстко печатает `--bs-btn-bg:#0d6efd` и ещё 12 локальных переменных. Перекрасить
+// бренд через CSS-переменные — это ~12 переменных на каждый из 16 вариантов кнопок,
+// и то же самое для .alert-*, .badge, .list-group-item-*, .table-*.
+// Отсюда — 40 строк ниже. См. DESIGN_REDESIGN.md D1.
+
+@use "tokens" as t;
+
+// ── Палитра ──────────────────────────────────────────────────────────────────
+$primary:   t.$accent;
+$secondary: t.$text-secondary;  // .btn-outline-secondary — 65 использований в коде
+$success:   t.$success;
+$info:      t.$info;
+$warning:   t.$warning;
+$danger:    t.$error;
+$light:     t.$surface-muted;
+$dark:      t.$navy;
+
+// ── Светлая тема ─────────────────────────────────────────────────────────────
+$body-bg:              t.$bg;
+$body-color:           t.$text-primary;
+$body-emphasis-color:  t.$text-primary;
+
+// `.text-muted` раскрывается в var(--bs-secondary-color). Отдаём ему text-secondary
+// (контраст 5.40), а не text-muted (2.81) — так все 114 мест в коде проходят AA
+// без единой правки компонента. См. D4.
+$body-secondary-color: t.$text-secondary;
+$body-secondary-bg:    t.$surface-muted;
+$body-tertiary-color:  t.$text-muted;
+$body-tertiary-bg:     t.$surface-muted;
+
+$border-color: t.$border;
+
+$primary-text-emphasis: t.$accent-dark;
+$success-text-emphasis: t.$success-emphasis;
+$info-text-emphasis:    t.$info-emphasis;
+$warning-text-emphasis: t.$warning-emphasis;
+$danger-text-emphasis:  t.$error-emphasis;
+
+$primary-bg-subtle: t.$accent-soft;
+$success-bg-subtle: t.$success-soft;
+$info-bg-subtle:    t.$info-soft;
+$warning-bg-subtle: t.$warning-soft;
+$danger-bg-subtle:  t.$error-soft;
+
+$primary-border-subtle: t.$accent-border;
+$success-border-subtle: t.$success-border;
+$info-border-subtle:    t.$info-border;
+$warning-border-subtle: t.$warning-border;
+$danger-border-subtle:  t.$error-border;
+
+// ── Тёмная тема ──────────────────────────────────────────────────────────────
+// Bootstrap 5.3 сам сгенерирует блок [data-bs-theme="dark"] из этих переменных —
+// свой слой тем писать не нужно. Заливки кнопок он тема-зависимыми не делает, и
+// это верно: белый на #A8412E даёт 6.07 в обеих темах.
+$body-bg-dark:              t.$bg-dark;
+$body-color-dark:           t.$text-primary-dark;
+$body-emphasis-color-dark:  t.$text-primary-dark;
+$body-secondary-color-dark: t.$text-secondary-dark;
+$body-secondary-bg-dark:    t.$surface-muted-dark;
+$body-tertiary-color-dark:  t.$text-muted-dark;
+$body-tertiary-bg-dark:     t.$surface-muted-dark;
+$border-color-dark:         t.$border-dark;
+
+$primary-text-emphasis-dark: t.$accent-text-dark;
+$success-text-emphasis-dark: t.$success-text-dark;
+$info-text-emphasis-dark:    t.$info-text-dark;
+$warning-text-emphasis-dark: t.$warning-text-dark;
+$danger-text-emphasis-dark:  t.$error-text-dark;
+
+$primary-bg-subtle-dark: t.$accent-soft-dark;
+$success-bg-subtle-dark: t.$success-soft-dark;
+$info-bg-subtle-dark:    t.$info-soft-dark;
+$warning-bg-subtle-dark: t.$warning-soft-dark;
+$danger-bg-subtle-dark:  t.$error-soft-dark;
+
+$primary-border-subtle-dark: t.$accent-border-dark;
+$success-border-subtle-dark: t.$success-border-dark;
+$info-border-subtle-dark:    t.$info-border-dark;
+$warning-border-subtle-dark: t.$warning-border-dark;
+$danger-border-subtle-dark:  t.$error-border-dark;
+
+$link-color-dark: t.$accent-text-dark;
+
+// ── Геометрия ────────────────────────────────────────────────────────────────
+$border-radius:    t.$radius-s;  // 10px — кнопки, поля
+$border-radius-sm: .5rem;
+$border-radius-lg: t.$radius-m;  // 16px — карточки
+$border-radius-xl: t.$radius-l;  // 22px — модалки, крупные кнопки
+
+// 1.5px — часть узнаваемости дизайна. Но на таблице сметы в 40 строк это шум,
+// поэтому таблицы остаются на 1px (D10).
+$border-width:       1.5px;
+$table-border-width: 1px;
+
+// 24px (line-height) + 2×10px + 2×1.5px = 47px — попадает в окно 44–48px
+// из demo/style.css:50.
+$input-btn-padding-y: .625rem;
+
+$font-family-sans-serif: t.$font-stack;
+// Моноширинного в дизайне нет вовсе, а утилита .font-monospace стоит на 11
+// денежных местах. Уводим её на Inter — выравнивание разрядов сохраняется через
+// font-variant-numeric: tabular-nums на самой утилите (_theme.scss). F-13, вопрос 8.
+$font-family-monospace: t.$font-stack;
+
+// Шкала отступов НЕ переопределяется: ремап ключей 0–5 сдвинул бы каждый p-3/mb-4
+// во всех 161 файлах. Добавлен только ключ 6 = 32px из шкалы дизайна (D9).
+// 12px из дизайна утилиты не получает — сознательно.
+$spacer: 1rem;
+$spacers: (
+  0: 0,
+  1: $spacer * .25,   // 4px
+  2: $spacer * .5,    // 8px   ← дизайн: xs
+  3: $spacer,         // 16px  ← дизайн: m
+  4: $spacer * 1.5,   // 24px  ← дизайн: l
+  5: $spacer * 3,     // 48px
+  6: $spacer * 2,     // 32px  ← дизайн: xl
+);
+
+// В дизайне фон страницы (#FAF7F4) и фон карточки (#FFFFFF) — разные, а у Bootstrap
+// --bs-card-bg по умолчанию равен --bs-body-bg. Без этого карточки сольются с фоном
+// в обеих темах. Значение — CSS-переменная, потому что она тема-зависима (D11).
+$card-bg:           var(--stroylit-surface);
+$modal-content-bg:  var(--stroylit-surface);
+$input-bg:          var(--stroylit-surface);
+$list-group-bg:     var(--stroylit-surface);
+$dropdown-bg:       var(--stroylit-surface);
+$offcanvas-bg-color: var(--stroylit-surface);
+
+@import "bootstrap/scss/bootstrap";

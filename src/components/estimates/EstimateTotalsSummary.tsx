@@ -103,7 +103,7 @@ export const EstimateTotalsSummary: FC<Props> = ({
         )}
 
         <hr className="my-2" />
-        <div className="d-flex justify-content-between align-items-center bg-light px-3 py-2 rounded-2">
+        <div className="d-flex justify-content-between align-items-center bg-body-tertiary px-3 py-2 rounded-2">
           <span className="fw-bold">ИТОГО брутто</span>
           <span className="fw-bold fs-5 font-monospace">
             {formatMinor(totals.grossMinor, currency)}

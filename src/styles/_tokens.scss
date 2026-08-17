@@ -1,0 +1,95 @@
+// Stroylit — дизайн-токены.
+//
+// Источник: Stroylit-design/tokens/tokens.css (палитра «Кирпично-красный»).
+// Перенесено дословно, кроме двух групп — см. agentic_docs/redesign/DESIGN_REDESIGN.md §1.1:
+//   1. --color-error уведён в холодный красный (D2), чтобы не путаться с акцентом;
+//   2. добавлены тона *-emphasis и *-border-subtle (D3) и вся тёмная тема (D5) —
+//      дизайн их не задаёт, а без emphasis статусные бейджи не проходят WCAG AA.
+//
+// Этот файл ничего не печатает в CSS. Числа отсюда расходятся в двух направлениях:
+// в _bootstrap.scss (до компиляции Bootstrap) и в _theme.scss (как --stroylit-* в рантайм).
+
+// ── Поверхности ──────────────────────────────────────────────────────────────
+$bg:             #FAF7F4;
+$surface:        #FFFFFF;
+$surface-muted:  #F2EDE8;
+$border:         #E3DCD3;
+
+$bg-dark:            #14100D;
+$surface-dark:       #221C17;
+$surface-muted-dark: #2E2721;
+$border-dark:        #413830;
+
+// ── Текст ────────────────────────────────────────────────────────────────────
+// text-muted (#9B948A) даёт 2.81 на фоне — ниже AA. Поэтому в Bootstrap он уходит
+// в $body-tertiary-color (плейсхолдеры, disabled), а роль `.text-muted` занимает
+// text-secondary с контрастом 5.40 (D4).
+$text-primary:   #241F19;
+$text-secondary: #6B655C;
+$text-muted:     #9B948A;
+$text-on-accent: #FFFFFF;
+
+$text-primary-dark:   #F2EDE7;  // 14.48 на surface-dark
+$text-secondary-dark: #B5ADA2;  // 7.59
+$text-muted-dark:     #8B8378;  // 4.51
+
+// ── Акцент ───────────────────────────────────────────────────────────────────
+$accent:        #A8412E;
+$accent-dark:   #8C3222;  // текст на accent-soft: 6.38
+$accent-soft:   #F5E0DA;
+$accent-border: #DCB3AB;
+
+$accent-soft-dark:   #42251D;
+$accent-border-dark: #5A2C21;
+$accent-text-dark:   #D77F6F;  // 4.73 на accent-soft-dark, 5.74 на surface-dark
+
+// Тёмный нейтральный — плашка «Итого», навбар.
+$navy: #2B211B;
+
+// ── Семантика ────────────────────────────────────────────────────────────────
+// Холодный красный вместо #D93A3A: ΔE76 к акценту 21.8 → 27.8, контраст 4.55 → 5.67.
+$error:          #C42350;
+$error-soft:     #FAE3E9;
+$error-border:   #E7A7B9;
+$error-emphasis: #9D1C40;  // 6.44 на error-soft
+
+$success:          #2E9E5B;
+$success-soft:     #E1F3E7;
+$success-border:   #ABD8BD;
+$success-emphasis: #237A46;  // 4.61
+
+$warning:          #C8790F;
+$warning-soft:     #FBEBD4;
+$warning-border:   #E9C99F;
+$warning-emphasis: #985C0B;  // 4.63
+
+$info:          #2B7FD9;
+$info-soft:     #E2EEFC;
+$info-border:   #AACCF0;
+$info-emphasis: #246BB6;  // 4.64
+
+$error-soft-dark:     #491E25;
+$error-border-dark:   #661F2F;
+$error-text-dark:     #E56D8F;  // 4.62 / 5.55
+$success-soft-dark:   #253B27;
+$success-border-dark: #275334;
+$success-text-dark:   #35B669;  // 4.64 / 6.46
+$warning-soft-dark:   #4A3215;
+$warning-border-dark: #684314;
+$warning-text-dark:   #E98D11;  // 4.71 / 6.64
+$info-soft-dark:      #243446;
+$info-border-dark:    #264668;
+$info-text-dark:      #63A1E3;  // 4.68 / 6.21
+
+// ── Каналы связи ─────────────────────────────────────────────────────────────
+// Не часть нашей палитры: узнаваемость мессенджера. В обеих темах одинаковы.
+$telegram: #27A7E7;
+$max:      #8C5CF5;
+$email:    #5B7083;
+
+// ── Геометрия ────────────────────────────────────────────────────────────────
+$radius-s: .625rem;   // 10px
+$radius-m: 1rem;      // 16px
+$radius-l: 1.375rem;  // 22px
+
+$font-stack: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;

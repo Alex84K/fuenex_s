@@ -58,7 +58,7 @@ export const ProjectsPage: FC = () => {
       <div className="row g-2 mb-4">
         <div className="col-md-7">
           <div className="input-group">
-            <span className="input-group-text bg-white">
+            <span className="input-group-text bg-surface">
               <i className="bi bi-search" />
             </span>
             <input

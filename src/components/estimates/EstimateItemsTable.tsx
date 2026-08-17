@@ -173,7 +173,7 @@ export const EstimateItemsTable: FC<Props> = ({
       <div className="card-body">
         <div className="d-flex flex-wrap align-items-center gap-2 mb-3">
           <div className="input-group" style={{ maxWidth: "18rem" }}>
-            <span className="input-group-text bg-white">
+            <span className="input-group-text bg-surface">
               <i className="bi bi-search" />
             </span>
             <input

@@ -20,10 +20,10 @@ import { getAccessToken, getRefreshToken } from "./utils/api"
 
 /** Shared Navbar + Footer shell wrapper */
 const Shell: FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div className="min-vh-100 d-flex flex-column bg-light">
+  <div className="min-vh-100 d-flex flex-column bg-body-tertiary">
     <Navbar />
     <main className="flex-grow-1">{children}</main>
-    <footer className="py-3 bg-white text-center text-muted border-top">
+    <footer className="py-3 bg-surface text-center text-muted border-top">
       <small>© {new Date().getFullYear()} Fuenex SNG. All rights reserved.</small>
     </footer>
   </div>

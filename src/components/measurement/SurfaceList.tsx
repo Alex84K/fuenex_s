@@ -125,7 +125,7 @@ export const SurfaceList: FC<Props> = ({
       </div>
 
       {openSurface && (
-        <div className="card border-0 bg-light mb-3">
+        <div className="card border-0 bg-body-tertiary mb-3">
           <div className="card-body p-3">
             <h6 className="fw-bold mb-2">
               Проёмы: {openSurface.name || openSurface.type || "поверхность"}

@@ -1,0 +1,70 @@
+// Рантайм-слой токенов.
+//
+// Блок [data-bs-theme="dark"] для самого Bootstrap генерируется им самим из
+// $*-dark переменных в _bootstrap.scss — здесь его дублировать не нужно.
+// Этот файл отвечает за то, чего в Bootstrap нет: --stroylit-* для мест, где
+// нужен именно дизайновый токен (фон карточки ≠ фон страницы, цвета каналов),
+// и за тема-зависимость этих значений.
+
+@use "tokens" as t;
+
+:root {
+  --stroylit-bg:            #{t.$bg};
+  --stroylit-surface:       #{t.$surface};
+  --stroylit-surface-muted: #{t.$surface-muted};
+  --stroylit-border:        #{t.$border};
+
+  --stroylit-text-primary:   #{t.$text-primary};
+  --stroylit-text-secondary: #{t.$text-secondary};
+  --stroylit-text-muted:     #{t.$text-muted};
+
+  --stroylit-accent:      #{t.$accent};
+  --stroylit-accent-dark: #{t.$accent-dark};
+  --stroylit-accent-soft: #{t.$accent-soft};
+  --stroylit-navy:        #{t.$navy};
+
+  // Цвета мессенджеров — не часть палитры, а узнаваемость бренда.
+  // Одинаковы в обеих темах (Palette_Options.md:152).
+  --stroylit-telegram: #{t.$telegram};
+  --stroylit-max:      #{t.$max};
+  --stroylit-email:    #{t.$email};
+}
+
+[data-bs-theme="dark"] {
+  --stroylit-bg:            #{t.$bg-dark};
+  --stroylit-surface:       #{t.$surface-dark};
+  --stroylit-surface-muted: #{t.$surface-muted-dark};
+  --stroylit-border:        #{t.$border-dark};
+
+  --stroylit-text-primary:   #{t.$text-primary-dark};
+  --stroylit-text-secondary: #{t.$text-secondary-dark};
+  --stroylit-text-muted:     #{t.$text-muted-dark};
+
+  --stroylit-accent-dark: #{t.$accent-text-dark};
+  --stroylit-accent-soft: #{t.$accent-soft-dark};
+  // --stroylit-navy в тёмной теме поднимается до приподнятой поверхности:
+  // почти чёрная плашка «Итого» на тёмном фоне была бы не видна.
+  --stroylit-navy: #{t.$surface-muted-dark};
+}
+
+// Тема-зависимая замена .bg-white. Штатные .bg-white/.bg-light завязаны на
+// статические --bs-*-rgb и тёмную тему не переживают, а .bg-body даёт фон
+// страницы (#FAF7F4), а не фон поверхности (#FFFFFF) — для input-group-text
+// рядом с полем ввода это заметное расхождение. См. DESIGN_REDESIGN.md D8.
+.bg-surface {
+  background-color: var(--stroylit-surface) !important;
+}
+
+// Утилита .font-monospace набрана Inter (F-13: $font-family-monospace уведён
+// на $font-stack в _bootstrap.scss). Дизайн моноширинного не знает, а разряды
+// в таблице сметы держатся на tabular-nums, а не на смене гарнитуры.
+.font-monospace {
+  font-variant-numeric: tabular-nums;
+}
+
+// Лендинг живёт по своей палитре (index.css, ~1150 строк) и в тёмную тему не
+// переводится — фиксируем это явно, чтобы он не подхватил тёмные --bs-* через
+// вложенность. См. DESIGN_REDESIGN.md D13.
+.landing-page {
+  color-scheme: light;
+}

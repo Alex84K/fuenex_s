@@ -1,0 +1,8 @@
+// Точка входа стилей. Порядок обязателен:
+//   tokens    — числа палитры, ничего не печатает
+//   bootstrap — $-переопределения и компиляция Bootstrap
+//   theme     — --stroylit-* поверх готового Bootstrap
+//
+// Подключается из main.tsx вместо bootstrap/dist/css/bootstrap.min.css.
+@use "bootstrap";
+@use "theme";

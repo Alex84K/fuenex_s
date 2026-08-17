@@ -7,6 +7,23 @@ import packageJson from "./package.json" with { type: "json" }
 export default defineConfig({
   plugins: [react()],
 
+  css: {
+    preprocessorOptions: {
+      scss: {
+        // Bootstrap 5.3 внутри всё ещё на @import и старых цветовых функциях.
+        // Без глушения каждая сборка выдаёт сотни чужих предупреждений и своих
+        // в них не видно. Снять, когда Bootstrap переедет на @use (ожидается в 6.x).
+        silenceDeprecations: [
+          "import",
+          "global-builtin",
+          "color-functions",
+          "if-function",
+        ],
+        loadPaths: ["node_modules"],
+      },
+    },
+  },
+
   server: {
     open: true,
     proxy: {

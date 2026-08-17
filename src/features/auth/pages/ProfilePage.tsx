@@ -625,7 +625,7 @@ export const ProfilePage: FC = () => {
                   Удалить аккаунт
                 </button>
               ) : (
-                <form onSubmit={handleDeleteAccount} className="mt-3 bg-light p-3 rounded-3">
+                <form onSubmit={handleDeleteAccount} className="mt-3 bg-body-tertiary p-3 rounded-3">
                   <p className="fw-semibold text-danger mb-2">
                     Внимание! Подтвердите удаление, введя текущий пароль:
                   </p>
